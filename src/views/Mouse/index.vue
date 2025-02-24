@@ -181,6 +181,11 @@ onMounted(() => {
   height: 98vh;
   position: relative;
   overflow: hidden;
+
+  *{
+    user-select: none;
+    touch-action: none;
+  }
 }
 
 .touch-surface {
