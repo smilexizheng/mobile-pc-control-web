@@ -131,6 +131,13 @@ onUnmounted(() => {
       <span :class="['indicator', connectionStatus]"></span>
       {{ statusText }}
     </div>
+
+    <!-- 连接状态 -->
+    <div class="status" style="left:auto;right: 20px;" @click="$router.push('/')">
+      返回
+    </div>
+
+
   </div>
 </template>
 
