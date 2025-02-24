@@ -1,6 +1,8 @@
 {
   "name": "win-controller-ui",
-  "version": "0.0.0",
+  "author": "Smile",
+  "description": "A serve to control windows",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,10 +11,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "vue": "^3.5.13"
+    "@vueuse/core": "^12.7.0",
+    "pinia": "^3.0.1",
+    "socket.io-client": "^4.8.1",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.1",
+    "less": "^4.2.2",
     "vite": "^6.1.0",
     "vite-plugin-vue-devtools": "^7.7.2"
   }
