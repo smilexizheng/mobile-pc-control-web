@@ -2,6 +2,7 @@ export const CLIENT_EMIT_EVENTS = {
     // 输入事件
     TYPING: 'typing',
     KEYPRESS: 'keypress',
+    KEY_TOGGLE: 'key-toggle',
     SYS_MOUSE_MOVE: 'sys-mouse-move',
     OPEN_URL: 'open-url',
     OPEN_APP: 'open-app',

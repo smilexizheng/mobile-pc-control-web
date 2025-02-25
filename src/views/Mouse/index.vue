@@ -2,12 +2,14 @@
 import {computed, onMounted, onUnmounted, ref} from 'vue'
 import {useSocketStore} from '@/stores/socket'
 import TextInput from "@/views/Mouse/TextInput.vue";
-import {useThrottleFn, useTitle} from "@vueuse/core";
+import {useEventListener, useIntervalFn, useThrottleFn, useTitle} from "@vueuse/core";
 import {posThreshold} from "@/utils/common.js";
 import {CLIENT_ON_EVENTS as CO} from "@/constant/client-on.js";
 import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
 
 const socketStore = useSocketStore()
+import {useKeyBoardStore} from "@/stores/keyboardStore.js";
+const keyBoard = useKeyBoardStore()
 useTitle('PC 键鼠控制')
 // 响应式状态
 const padRef = ref(null)
@@ -67,7 +69,8 @@ const handleMove = (e) => {
   const deltaX = touch.clientX - touchStartPos.value.x
   const deltaY = touch.clientY - touchStartPos.value.y
 
-  moveDistancePos.value.x = deltaX * 2
+  moveDistancePos.value.x = deltaX * 3
+
   moveDistancePos.value.y = deltaY * 2
 
   sendCoordinates()
@@ -80,10 +83,10 @@ const sendCoordinates =
       if (!socketStore?.isConnected ||
           (moveDistancePos.value.x === 0 &&
               moveDistancePos.value.y === 0)) return
-      if (!isMove.value && posThreshold(moveDistancePos.value.x, moveDistancePos.value.y, 10)) {
+      if (!isMove.value && posThreshold(moveDistancePos.value.x, moveDistancePos.value.y, 30)) {
         isMove.value = true;
         // 左键按下
-        if (!leftDown.value && Date.now() - touchStartPos.value.time > 200) {
+        if (!leftDown.value && Date.now() - touchStartPos.value.time > 300) {
           socketStore.emit(CE.SYS_MOUSE_TOGGLE, {down: "down", button: "left"})
           leftDown.value = true;
         }
@@ -163,6 +166,7 @@ onMounted(() => {
 <template>
   <div class="touchpad-container">
     <!-- 触控板区域 -->
+    {{isActive}}
     <div
         ref="padRef"
         class="touch-surface"
@@ -187,10 +191,11 @@ onMounted(() => {
     </div>
 
     <div class="right-side">
-      <img src="@/assets/icons/roller_up.svg" alt="滚轮按键" @click="socketStore.emit(CE.KEYPRESS,{key:'pageup'})">
-      <img src="@/assets/icons/roller_down.svg" alt="滚轮按键" @click="socketStore.emit(CE.KEYPRESS,{key:'pagedown'})">
+<!--      <img src="@/assets/icons/roller_up.svg" alt="滚轮按键"   @touchstart.passive="keyBoard.keyToggle({key:'a'})" >-->
+      <img src="@/assets/icons/roller_up.svg" alt="滚轮按键"   @touchstart.passive="keyBoard.startIntervalPress({event:CE.KEYPRESS,eventData:{key:'pageup'}})" >
+      <img src="@/assets/icons/roller_down.svg" alt="滚轮按键" @touchstart.passive="keyBoard.startIntervalPress({event:CE.KEYPRESS,eventData:{key:'pagedown'}})">
       <img src="@/assets/icons/backspace.svg"  alt="删除"
-           @click="socketStore.emit(CE.KEYPRESS,{key:'backspace'})">
+           @touchstart.passive="keyBoard.startIntervalPress({event:CE.KEYPRESS,eventData:{key:'backspace'}})">
     </div>
 
 
@@ -204,13 +209,11 @@ onMounted(() => {
   height: 100%;
   position: relative;
   overflow: hidden;
-  user-select: none;
-  touch-action: none;
 
 
   * {
-    // 新增禁止选中样式
     user-select: none;
+    touch-action: none;
     -webkit-user-select: none;
     -webkit-touch-callout: none;
   }

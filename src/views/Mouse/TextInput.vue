@@ -23,7 +23,6 @@ const sendMessage = (enter) => {
   }
 }
 
-
 </script>
 
 
@@ -32,13 +31,13 @@ const sendMessage = (enter) => {
   <!-- 吸底输入框 -->
   <div class="input-container" ref="inputContainer">
 
+
     <!-- 文本输入区域 -->
     <textarea
         ref="textarea"
         v-model="inputMessage"
         class="input-text"
         placeholder="请输入内容"
-        @focusout="sendMessage(false)"
     />
     <img src="@/assets/icons/enter_key.svg" style="width: 40px;" alt="回车按键"
          @click="sendMessage(true)">
