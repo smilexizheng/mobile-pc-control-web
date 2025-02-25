@@ -3,7 +3,8 @@ import {onMounted, ref} from 'vue';
 import {useDebounceFn} from '@vueuse/core'
 import VolumeControl from "@/views/Home/VolumeControl.vue";
 import {useSocketStore} from '@/stores/socket'
-import { useRouter } from 'vue-router'
+import {useRouter} from 'vue-router'
+import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
 
 const router = useRouter()
 
@@ -15,36 +16,36 @@ onMounted(() => {
 const apps = ref([
   {
     categoryName: "系统操作", modules: [
-      {name: "桌面", color: "#4CAF50", event: "keypress", eventData: {key: "d", modifier: "command"}},
-      {name: "复制", color: "#2196F3", event: "keypress", eventData: {key: "c", modifier: "control"}},
-      {name: "粘贴", color: "#2196F3", event: "keypress", eventData: {key: "v", modifier: "control"}},
-      {name: "撤回", color: "#FF5722", event: "keypress", eventData: {key: "z", modifier: "control"}},
-      {name: "关机", color: "#FF5722", event: "sys-shutdown"}],
+      {name: "桌面", color: "#4CAF50", event: CE.KEYPRESS, eventData: {key: "d", modifier: "command"}},
+      {name: "复制", color: "#2196F3", event: CE.KEYPRESS, eventData: {key: "c", modifier: "control"}},
+      {name: "粘贴", color: "#2196F3", event: CE.KEYPRESS, eventData: {key: "v", modifier: "control"}},
+      {name: "撤回", color: "#FF5722", event: CE.KEYPRESS, eventData: {key: "z", modifier: "control"}},
+      {name: "关机", color: "#FF5722", event: CE.SYS_SHUTDOWN}],
     showSysVolume: true
   },
   {
     categoryName: "网页", modules: [
-      {name: "腾讯视频", color: "#2196F3", event: "open-url", eventData: {url: "https://v.qq.com/"}},
-      {name: "B站", color: "#4CAF50", event: "open-url", eventData: {url: "https://www.bilibili.com/"}},
-      {name: "刷新", color: "#2196F3", event: "keypress", eventData: {key: "f5"}},
-      {name: "网页全屏", color: "#2196F3", event: "keypress", eventData: {key: "f11"}},
-      {name: "ESC", color: "#FF5722", event: "keypress", eventData: {key: "escape"}}
+      {name: "腾讯视频", color: "#2196F3", event: CE.OPEN_URL, eventData: {url: "https://v.qq.com/"}},
+      {name: "B站", color: "#4CAF50", event: CE.OPEN_URL, eventData: {url: "https://www.bilibili.com/"}},
+      {name: "刷新", color: "#2196F3", event: CE.KEYPRESS, eventData: {key: "f5"}},
+      {name: "网页全屏", color: "#2196F3", event: CE.KEYPRESS, eventData: {key: "f11"}},
+      {name: "ESC", color: "#FF5722", event: CE.KEYPRESS, eventData: {key: "escape"}}
     ]
   },
 
   {
     categoryName: "QQ音乐", modules: [
-      {name: "上一首", color: "#4CAF50", event: "keypress", eventData: {key: "left", modifier: "control+alt"}},
-      {name: "下一首", color: "#2196F3", event: "keypress", eventData: {key: "right", modifier: "control+alt"}},
-      {name: "播放/暂停", color: "#FF5722", event: "keypress", eventData: {key: "f5", modifier: "control+alt"}},
-      {name: "+音量", color: "#4CAF50", event: "keypress", eventData: {key: "up", modifier: "control+alt"}},
-      {name: "-音量", color: "#2196F3", event: "keypress", eventData: {key: "down", modifier: "control+alt"}},
-      {name: "歌词显隐", color: "#2196F3", event: "keypress", eventData: {key: "w", modifier: "control+alt"}},
+      {name: "上一首", color: "#4CAF50", event: CE.KEYPRESS, eventData: {key: "left", modifier: "control+alt"}},
+      {name: "下一首", color: "#2196F3", event: CE.KEYPRESS, eventData: {key: "right", modifier: "control+alt"}},
+      {name: "播放/暂停", color: "#FF5722", event: CE.KEYPRESS, eventData: {key: "f5", modifier: "control+alt"}},
+      {name: "+音量", color: "#4CAF50", event: CE.KEYPRESS, eventData: {key: "up", modifier: "control+alt"}},
+      {name: "-音量", color: "#2196F3", event: CE.KEYPRESS, eventData: {key: "down", modifier: "control+alt"}},
+      {name: "歌词显隐", color: "#2196F3", event: CE.KEYPRESS, eventData: {key: "w", modifier: "control+alt"}},
     ]
   }, {
     categoryName: "应用", modules: [
-      {name: "鼠标", color: "#4CAF50", action: "router",toLink: "/mouse"},
-      {name: "Postman", color: "#4CAF50", event: "open-app", eventData: {name: "Postman"}},
+      {name: "鼠标", color: "#4CAF50", action: "router", toLink: "/mouse"},
+      {name: "Postman", color: "#4CAF50", event: CE.OPEN_APP, eventData: {name: "Postman"}},
     ]
   },
 
@@ -129,8 +130,8 @@ const onClick = useDebounceFn((item) => {
 
 <style scoped>
 .ios-home-screen {
-  min-height: 100vh;
   user-select: none;
+  overflow: auto;
   /* 移除点击高亮 */
   -webkit-tap-highlight-color: transparent;
 }

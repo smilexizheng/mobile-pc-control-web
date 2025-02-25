@@ -1,7 +1,8 @@
 import {defineStore} from 'pinia'
 import {io} from 'socket.io-client'
 import {ref} from "vue";
-
+import {CLIENT_ON_EVENTS as CO} from "@/constant/client-on.js";
+import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
 export const useSocketStore = defineStore('socket', () => {
     const socket = ref(null)
     const isConnected = ref(false)
@@ -21,7 +22,7 @@ export const useSocketStore = defineStore('socket', () => {
                 isConnected.value = false
             })
 
-            socket.value.on('response', (data) => {
+            socket.value.on(CO.RESPONSE, (data) => {
                 console.log("response>>>>>>>>" + data)
             })
         }
@@ -36,7 +37,7 @@ export const useSocketStore = defineStore('socket', () => {
     }
 
     function keypress(params) {
-        socket.value?.emit('keypress', params)
+        socket.value?.emit(CE.KEYPRESS, params)
     }
 
     function disconnect() {

@@ -2,10 +2,13 @@
 import {computed, onMounted, onUnmounted, ref} from 'vue'
 import {useSocketStore} from '@/stores/socket'
 import TextInput from "@/views/Mouse/TextInput.vue";
-
+import {useThrottleFn, useTitle} from "@vueuse/core";
+import {posThreshold} from "@/utils/common.js";
+import {CLIENT_ON_EVENTS as CO} from "@/constant/client-on.js";
+import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
 
 const socketStore = useSocketStore()
-
+useTitle('PC 键鼠控制')
 // 响应式状态
 const padRef = ref(null)
 // 起点
@@ -18,7 +21,13 @@ const isDragging = ref(false)
 const isMove = ref(false)
 
 const leftDown = ref(false)
-const rightDown = ref(false)
+
+
+// 添加双击相关状态
+const lastTapTime = ref(0)
+const tapTimeout = ref(null)
+const tapCount = ref(0)
+
 
 const connectionStatus = ref('disconnected') // disconnected/connecting/connected/error
 
@@ -26,26 +35,28 @@ const connectionStatus = ref('disconnected') // disconnected/connecting/connecte
 const connectSocket = () => {
   socketStore.connect()
   sendCoordinates() // 发送初始坐标
-  socketStore.emit("get-pointer", null)
-  socketStore.on("pointer", (res) => {
+  socketStore.on(CO.SYS_POINTER_POS, (res) => {
     console.log(res)
   })
 }
 
 // 触摸事件处理
 const handleStart = (e) => {
+  // e.preventDefault()
   const touch = e.touches[0]
   touchStartPos.value = {
     x: touch.clientX,
     y: touch.clientY,
     time: Date.now()
   }
+  if (tapCount.value = 0) {
+    lastTapTime.value = Date.now()
+  }
+
   isDragging.value = true
   isMove.value = false
   leftDown.value = false
-  socketStore.emit('sys-pointer-start', null)
-
-
+  socketStore.emit(CE.SYS_POINTER_START, null)
 }
 
 
@@ -57,56 +68,78 @@ const handleMove = (e) => {
   const deltaY = touch.clientY - touchStartPos.value.y
 
   moveDistancePos.value.x = deltaX * 2
-  moveDistancePos.value.y = deltaY * 1.5
+  moveDistancePos.value.y = deltaY * 2
 
   sendCoordinates()
 }
 
 // 发送坐标数据
-const sendCoordinates = () => {
-  if (socketStore?.isConnected) {
-    // 左键按下
-    if (!leftDown.value && !isMove.value && Date.now() - touchStartPos.value.time >= 200) {
-      leftDown.value = true;
-      socketStore.emit('sys-mouse-toggle', {down: "down", button: "left"})
+const sendCoordinates =
+    // useThrottleFn(
+    () => {
+      if (!socketStore?.isConnected ||
+          (moveDistancePos.value.x === 0 &&
+              moveDistancePos.value.y === 0)) return
+      if (!isMove.value && posThreshold(moveDistancePos.value.x, moveDistancePos.value.y, 10)) {
+        isMove.value = true;
+        // 左键按下
+        if (!leftDown.value && Date.now() - touchStartPos.value.time > 200) {
+          socketStore.emit(CE.SYS_MOUSE_TOGGLE, {down: "down", button: "left"})
+          leftDown.value = true;
+        }
+      }
+
+      socketStore.emit(CE.SYS_POINTER_MOVE, {
+        x: moveDistancePos.value.x,
+        y: moveDistancePos.value.y,
+        timestamp: Date.now()
+      })
     }
-    socketStore.emit('sys-pointer-move', {
-      x: moveDistancePos.value.x,
-      y: moveDistancePos.value.y,
-      timestamp: Date.now()
-    })
-    if (!isMove.value) {
-      isMove.value = true;
-    }
-  }
-}
+// , 10, true);
 
 const handleEnd = () => {
-  // 长按
-  if (!leftDown.value && Date.now() - touchStartPos.value.time >= 500 && !isMove.value) {
-    socketStore.emit('sys-mouse-click', {button: "right", double: false})
-  }
-
   // 释放左键
   if (leftDown.value) {
-    socketStore.emit('sys-mouse-toggle', {down: "up", button: "left"})
+    socketStore.emit(CE.SYS_MOUSE_TOGGLE, {down: "up", button: "left"})
+    leftDown.value = false
   }
 
+  // 操作类型判断
+  if (!isMove.value) {
+    const currentTime = Date.now()
+    const tapDuration = currentTime - touchStartPos.value.time
+
+    // 长按右键（500ms）
+    if (tapDuration > 500) {
+      socketStore.emit(CE.SYS_MOUSE_CLICK, {button: "right", double: false})
+    }
+    // 单击/双击判断
+    else if (tapDuration < 200) {
+      if (currentTime - lastTapTime.value < 200) {
+        clearTimeout(tapTimeout.value)
+        tapCount.value = 0
+        // 双击
+        socketStore.emit(CE.SYS_MOUSE_CLICK, {button: "left", double: true})
+      } else {
+        // 单击
+        tapCount.value = 1
+        tapTimeout.value = setTimeout(() => {
+          if (tapCount.value === 1) {
+            socketStore.emit(CE.SYS_MOUSE_CLICK, {button: "left", double: false})
+          }
+          tapCount.value = 0
+        }, 200)
+      }
+      lastTapTime.value = currentTime
+    }
+  }
   isDragging.value = false
   isMove.value = false
 
-
-  socketStore.emit('sys-pointer-end', null)
+  moveDistancePos.value = {x: 0, y: 0}
+  socketStore.emit(CE.SYS_POINTER_END, null)
 }
 
-
-const handleClick = () => {
-  socketStore.emit('sys-mouse-click', {button:'left', double: false})
-}
-
-const handleDbClick = () => {
-  socketStore.emit('sys-mouse-click', {button:'left', double: true})
-}
 
 
 // 状态显示文本
@@ -136,10 +169,10 @@ onMounted(() => {
         @touchstart="handleStart"
         @touchmove.prevent="handleMove"
         @touchend="handleEnd"
-        @click="handleClick"
-        @dblclick="handleDbClick"
     >
-
+      .x: {{ moveDistancePos.x }}
+      .y: {{ moveDistancePos.y }}
+      {{ Date.now() - touchStartPos.time }}
     </div>
 
 
@@ -154,9 +187,10 @@ onMounted(() => {
     </div>
 
     <div class="right-side">
-      <img src="@/assets/icons/roller_up.svg" style="height: 50px;color: #333333" alt="滚轮按键"   @click="socketStore.emit('keypress',{key:'pageup'})">
-      <img src="@/assets/icons/roller_down.svg" style="height: 50px" alt="滚轮按键"   @click="socketStore.emit('keypress',{key:'pagedown'})">
-      <img src="@/assets/icons/enter_key.svg"  style="width:50px;" alt="回车按键" @click="socketStore.emit('keypress',{key:'enter'})">
+      <img src="@/assets/icons/roller_up.svg" alt="滚轮按键" @click="socketStore.emit(CE.KEYPRESS,{key:'pageup'})">
+      <img src="@/assets/icons/roller_down.svg" alt="滚轮按键" @click="socketStore.emit(CE.KEYPRESS,{key:'pagedown'})">
+      <img src="@/assets/icons/backspace.svg"  alt="删除"
+           @click="socketStore.emit(CE.KEYPRESS,{key:'backspace'})">
     </div>
 
 
@@ -166,39 +200,42 @@ onMounted(() => {
 
 
 <style scoped lang="less">
-
-.right-side {
-  position: fixed;
-  right: 20px;
-  top: 55%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 30px;
-}
-
 .touchpad-container {
-  height: 98vh;
+  height: 100%;
   position: relative;
   overflow: hidden;
+  user-select: none;
+  touch-action: none;
 
-  *{
+
+  * {
+    // 新增禁止选中样式
     user-select: none;
-    touch-action: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
   }
 }
 
 .touch-surface {
-  width: 100%;
   height: 100%;
-  background: #b6b4b4;
+  border-radius: 10px;
+  background: #e3e2e2;
   position: relative;
-  // 新增禁止选中样式
-  user-select: none;
-  -webkit-user-select: none;
-  -webkit-touch-callout: none;
+}
 
 
+.right-side {
+  position: fixed;
+  right: 10px;
+  top: 65%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+
+  & img {
+    width: 45px;
+  }
 }
 
 
