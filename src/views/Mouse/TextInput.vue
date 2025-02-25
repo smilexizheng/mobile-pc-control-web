@@ -76,7 +76,6 @@ const sendMessage = (enter) => {
 
 .input-text {
   width: 65%;
-  background: #e5e5e5;
   border: 1px solid #e5e5e5;
   border-radius: 6px;
   padding: 6px;
