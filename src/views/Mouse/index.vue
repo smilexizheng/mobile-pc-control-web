@@ -1,15 +1,17 @@
 <script setup>
-import {computed, onMounted, onUnmounted, ref} from 'vue'
+import {computed, onMounted, ref, watch} from 'vue'
 import {useSocketStore} from '@/stores/socket'
 import TextInput from "@/views/Mouse/TextInput.vue";
-import {useEventListener, useIntervalFn, useThrottleFn, useToggle,useTitle} from "@vueuse/core";
+import {useTitle, useToggle} from "@vueuse/core";
 import {posThreshold} from "@/utils/common.js";
 import {CLIENT_ON_EVENTS as CO} from "@/constant/client-on.js";
 import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
-
-const socketStore = useSocketStore()
+import on_screen from "@/assets/icons/on_screen.svg"
+import off_screen from "@/assets/icons/off_screen.svg"
 import {useKeyBoardStore} from "@/stores/keyboardStore.js";
 import ScreenShow from "@/views/Mouse/ScreenShow.vue";
+
+const socketStore = useSocketStore()
 const keyBoard = useKeyBoardStore()
 useTitle('PC 键鼠控制')
 // 响应式状态
@@ -35,13 +37,6 @@ const tapCount = ref(0)
 
 const connectionStatus = ref('disconnected') // disconnected/connecting/connected/error
 
-
-const connectSocket = () => {
-  sendCoordinates() // 发送初始坐标
-  socketStore.on(CO.SYS_POINTER_POS, (res) => {
-    console.log(res)
-  })
-}
 
 // 触摸事件处理
 const handleStart = (e) => {
@@ -145,7 +140,6 @@ const handleEnd = () => {
 }
 
 
-
 // 状态显示文本
 const statusText = computed(() => {
   connectionStatus.value = socketStore.isConnected ? 'connected' : 'disconnected'
@@ -155,18 +149,42 @@ const statusText = computed(() => {
   }[connectionStatus.value]
 })
 
+const connectSocket = () => {
+  sendCoordinates() // 发送初始坐标
+  socketStore.on(CO.SYS_POINTER_POS, (res) => {
+    console.log(res)
+  })
+}
 
 // 生命周期
 onMounted(() => {
   connectSocket()
+  console.log(padRef.value.offsetWidth, padRef.value.offsetHeight)
+  socketStore.emit(CE.MOBILE_SCREEN_SIZE, {
+    screenSize: {
+      width: padRef.value.offsetWidth,
+      height: padRef.value.offsetHeight
+    }
+  });
+})
+
+const padStyle = ref({
+  background: '#e3e2e2'
+})
+
+watch(showScreen, (newVal) => {
+  socketStore.emit(newVal ? CE.JOIN_ROOM : CE.LEAVE_ROOM, {roomName: 'screen'});
+  padStyle.value = {
+    background: newVal ? 'none' : '#e3e2e2'
+  }
 })
 
 
 </script>
 
 <template>
+  <ScreenShow v-show="showScreen"/>
   <div class="touchpad-container">
-    <ScreenShow v-show="showScreen"/>
     <!-- 触控板区域 -->
     <div
         ref="padRef"
@@ -174,10 +192,12 @@ onMounted(() => {
         @touchstart="handleStart"
         @touchmove.prevent="handleMove"
         @touchend="handleEnd"
+        :style="padStyle"
     >
-      .x: {{ moveDistancePos.x }}
-      .y: {{ moveDistancePos.y }}
+      x: {{ moveDistancePos.x }}
+      y: {{ moveDistancePos.y }}
       {{ Date.now() - touchStartPos.time }}
+
     </div>
 
 
@@ -192,23 +212,33 @@ onMounted(() => {
     </div>
 
     <div class="right-side">
-      <img src="@/assets/icons/look_screen.svg" alt="显示屏幕"   @click="toggleShowScreen()" >
+      <img :src=showScreen?on_screen:off_screen alt="显示屏幕" @click="toggleShowScreen()">
+      <img src="@/assets/icons/roller_down.svg" alt="上" style="transform: rotate(180deg);"
+           @touchstart.passive="keyBoard.startIntervalPress({event:CE.SYS_SCROLL_VERTICAL,eventData:true})">
 
-      <!--      <img src="@/assets/icons/roller_up.svg" alt="滚轮按键"   @touchstart.passive="keyBoard.keyToggle({key:'a'})" >-->
-      <img src="@/assets/icons/roller_up.svg" alt="滚轮按键"   @touchstart.passive="keyBoard.startIntervalPress({event:CE.KEYPRESS,eventData:{key:'pageup'}})" >
-      <img src="@/assets/icons/roller_down.svg" alt="滚轮按键" @touchstart.passive="keyBoard.startIntervalPress({event:CE.KEYPRESS,eventData:{key:'pagedown'}})">
-      <img src="@/assets/icons/backspace.svg"  alt="删除"
+
+      <div>
+        <img src="@/assets/icons/roller_down.svg" alt="左" style="transform: rotate(90deg);"
+             @touchstart.passive="keyBoard.startIntervalPress({event:CE.SYS_SCROLL_HORIZONTAL,eventData:false})">
+        <img src="@/assets/icons/roller_down.svg" alt="右" style="transform: rotate(270deg);"
+             @touchstart.passive="keyBoard.startIntervalPress({event:CE.SYS_SCROLL_HORIZONTAL,eventData:true})">
+      </div>
+      <img src="@/assets/icons/roller_down.svg" alt="下"
+           @touchstart.passive="keyBoard.startIntervalPress({event:CE.SYS_SCROLL_VERTICAL,eventData:false})">
+      <img src="@/assets/icons/backspace.svg" alt="删除"
            @touchstart.passive="keyBoard.startIntervalPress({event:CE.KEYPRESS,eventData:{key:'backspace'}})">
     </div>
 
-
+    <TextInput/>
   </div>
-  <TextInput/>
+
 </template>
 
 
 <style scoped lang="less">
 .touchpad-container {
+  z-index: 9;
+  width: 100%;
   height: 100%;
   position: relative;
   overflow: hidden;
@@ -225,22 +255,21 @@ onMounted(() => {
 .touch-surface {
   height: 100%;
   border-radius: 10px;
-  background: #e3e2e2;
   position: relative;
 }
 
 
 .right-side {
   position: fixed;
-  right: 12px;
-  top: 60%;
+  right: 2px;
+  top: 55%;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  gap: 6px;
+  align-items: center;
+  gap: 0;
 
   & img {
-    width: 42px;
+    width: 40px;
   }
 }
 

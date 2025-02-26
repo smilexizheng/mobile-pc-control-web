@@ -1,10 +1,8 @@
 <script setup>
-import {ref, onMounted} from 'vue';
+import {onMounted, ref} from 'vue';
 import {useSocketStore} from '@/stores/socket'
 
 const socketStore = useSocketStore();
-
-import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
 
 const screenImg = ref(null);
 // const imgStyle = ref({
@@ -12,9 +10,7 @@ const screenImg = ref(null);
 // });
 
 onMounted(() => {
-  socketStore.emit(CE.JOIN_ROOM, 'screen');
   socketStore.on('screen-data', (data) => {
-    console.log(12)
     const blob = new Blob([data.image]);
     screenImg.value = URL.createObjectURL(blob);
     // screenImg.value = `data:image/jpeg;base64,${data.image}`;
@@ -36,7 +32,21 @@ onMounted(() => {
 
 <style scoped>
 .screen-show {
-  position: relative;
+  position: absolute;
+  z-index: 1;
+  top: 10px;
+  right: 10px;
+  left: 10px;
+  bottom: 10px;
+  overflow: hidden;
+
+
+  * {
+    user-select: none;
+    touch-action: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
 }
 
 .pointer {
@@ -47,6 +57,7 @@ onMounted(() => {
 }
 
 .screen-img {
+  border-radius: 10px;
   width: 100%;
 }
 

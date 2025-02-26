@@ -2,9 +2,33 @@ import {defineStore} from 'pinia'
 import {io} from 'socket.io-client'
 import {ref} from "vue";
 import {CLIENT_ON_EVENTS as CO} from "@/constant/client-on.js";
+import {useIntervalFn} from "@vueuse/core";
+
+
+/**
+ *  持续触发 任意socket某个事件
+ *  startEventInterval({event:CE.KEYPRESS,eventData:{key:'pageup'}})"
+ *
+ */
 export const useSocketStore = defineStore('socket', () => {
     const socket = ref(null)
     const isConnected = ref(false)
+
+
+    const intervalData = ref(null);
+    const interval = ref(50)
+
+    const {
+        pause: intervalPause,
+        resume: intervalResume,
+        isActive: intervalIsRun
+    } = useIntervalFn((event, eventData) => {
+        if (intervalData.value && isConnected.value) {
+            emit(intervalData.value.event, intervalData.value.eventData)
+        } else {
+            intervalPause();
+        }
+    }, interval)
 
     function connect() {
         if (!socket.value) {
@@ -37,6 +61,23 @@ export const useSocketStore = defineStore('socket', () => {
 
 
 
+
+    const startEventInterval = (data) => {
+        intervalData.value = {...data};
+        intervalResume();
+    }
+
+    const stopEventInterval = () => {
+        if (intervalIsRun) {
+            intervalData.value = null;
+            intervalPause();
+        }
+    }
+
+    function setInterval(val) {
+        interval.value = val;
+    }
+
     function disconnect() {
         socket.value?.disconnect()
         socket.value = null
@@ -50,5 +91,5 @@ export const useSocketStore = defineStore('socket', () => {
 
 
 
-    return {socket, isConnected, connect, disconnect, on, emit}
+    return {socket, isConnected, connect, disconnect, on, emit,startIntervalPress: startEventInterval, clearKeyEvent: stopEventInterval,  intervalIsRun}
 })

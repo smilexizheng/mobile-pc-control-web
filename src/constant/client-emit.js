@@ -1,6 +1,9 @@
 export const CLIENT_EMIT_EVENTS = {
     // 加入房间
     JOIN_ROOM: 'join-room',
+    LEAVE_ROOM: 'leave_room',
+    MOBILE_SCREEN_SIZE: 'mobile_screen_size',
+
     // 输入事件
     TYPING: 'typing',
     KEYPRESS: 'keypress',
@@ -18,7 +21,8 @@ export const CLIENT_EMIT_EVENTS = {
     // 鼠标控制
     SYS_MOUSE_CLICK: 'sys-mouse-click',
     SYS_MOUSE_TOGGLE: 'sys-mouse-toggle',
-    SYS_MOUSE_WHEEL: 'sys-mouse-wheel',
+    SYS_SCROLL_HORIZONTAL:'sys_scroll_horizontal',
+    SYS_SCROLL_VERTICAL:'sys_scroll_vertical',
 
     // 指针控制
     SYS_POINTER_START: 'sys-pointer-start',

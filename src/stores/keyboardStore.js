@@ -4,6 +4,9 @@ import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
 import {useIntervalFn, useToggle} from "@vueuse/core";
 import {useSocketStore} from "@/stores/socket.js";
 
+// 持续触发某个事件
+// @touchstart.passive="keyBoard.startIntervalPress({event:CE.KEYPRESS,eventData:{key:'pageup'}})"
+// 全局监听抬起 会自动释放 emit 键盘up
 export const useKeyBoardStore = defineStore('keyboardStore', () => {
 
 
@@ -46,7 +49,6 @@ export const useKeyBoardStore = defineStore('keyboardStore', () => {
 
 
     const startIntervalPress = (data) => {
-        intervalPressPause();
         keyboardData.value = {...data};
         intervalPressResume();
     }
