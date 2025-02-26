@@ -2,8 +2,6 @@ import {defineStore} from 'pinia'
 import {io} from 'socket.io-client'
 import {ref} from "vue";
 import {CLIENT_ON_EVENTS as CO} from "@/constant/client-on.js";
-import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
-import {useEventListener, useIntervalFn} from "@vueuse/core";
 export const useSocketStore = defineStore('socket', () => {
     const socket = ref(null)
     const isConnected = ref(false)

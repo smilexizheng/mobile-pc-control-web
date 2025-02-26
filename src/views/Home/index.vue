@@ -9,9 +9,7 @@ import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
 const router = useRouter()
 
 const socketStore = useSocketStore()
-onMounted(() => {
-  socketStore.connect()
-})
+
 // 模拟应用数据
 const apps = ref([
   {

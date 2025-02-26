@@ -2,13 +2,14 @@
 import {computed, onMounted, onUnmounted, ref} from 'vue'
 import {useSocketStore} from '@/stores/socket'
 import TextInput from "@/views/Mouse/TextInput.vue";
-import {useEventListener, useIntervalFn, useThrottleFn, useTitle} from "@vueuse/core";
+import {useEventListener, useIntervalFn, useThrottleFn, useToggle,useTitle} from "@vueuse/core";
 import {posThreshold} from "@/utils/common.js";
 import {CLIENT_ON_EVENTS as CO} from "@/constant/client-on.js";
 import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
 
 const socketStore = useSocketStore()
 import {useKeyBoardStore} from "@/stores/keyboardStore.js";
+import ScreenShow from "@/views/Mouse/ScreenShow.vue";
 const keyBoard = useKeyBoardStore()
 useTitle('PC 键鼠控制')
 // 响应式状态
@@ -23,6 +24,7 @@ const isDragging = ref(false)
 const isMove = ref(false)
 
 const leftDown = ref(false)
+const [showScreen, toggleShowScreen] = useToggle(false)
 
 
 // 添加双击相关状态
@@ -35,7 +37,6 @@ const connectionStatus = ref('disconnected') // disconnected/connecting/connecte
 
 
 const connectSocket = () => {
-  socketStore.connect()
   sendCoordinates() // 发送初始坐标
   socketStore.on(CO.SYS_POINTER_POS, (res) => {
     console.log(res)
@@ -165,8 +166,8 @@ onMounted(() => {
 
 <template>
   <div class="touchpad-container">
+    <ScreenShow v-show="showScreen"/>
     <!-- 触控板区域 -->
-    {{isActive}}
     <div
         ref="padRef"
         class="touch-surface"
@@ -191,7 +192,9 @@ onMounted(() => {
     </div>
 
     <div class="right-side">
-<!--      <img src="@/assets/icons/roller_up.svg" alt="滚轮按键"   @touchstart.passive="keyBoard.keyToggle({key:'a'})" >-->
+      <img src="@/assets/icons/look_screen.svg" alt="显示屏幕"   @click="toggleShowScreen()" >
+
+      <!--      <img src="@/assets/icons/roller_up.svg" alt="滚轮按键"   @touchstart.passive="keyBoard.keyToggle({key:'a'})" >-->
       <img src="@/assets/icons/roller_up.svg" alt="滚轮按键"   @touchstart.passive="keyBoard.startIntervalPress({event:CE.KEYPRESS,eventData:{key:'pageup'}})" >
       <img src="@/assets/icons/roller_down.svg" alt="滚轮按键" @touchstart.passive="keyBoard.startIntervalPress({event:CE.KEYPRESS,eventData:{key:'pagedown'}})">
       <img src="@/assets/icons/backspace.svg"  alt="删除"
@@ -229,15 +232,15 @@ onMounted(() => {
 
 .right-side {
   position: fixed;
-  right: 10px;
-  top: 65%;
+  right: 12px;
+  top: 60%;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 8px;
+  gap: 6px;
 
   & img {
-    width: 45px;
+    width: 42px;
   }
 }
 

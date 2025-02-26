@@ -1,4 +1,6 @@
 export const CLIENT_EMIT_EVENTS = {
+    // 加入房间
+    JOIN_ROOM: 'join-room',
     // 输入事件
     TYPING: 'typing',
     KEYPRESS: 'keypress',
