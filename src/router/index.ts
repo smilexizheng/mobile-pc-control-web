@@ -14,6 +14,12 @@ const router = createRouter({
       name: 'mouse',
       component: () => import('../views/Mouse/index.vue')
     },
+
+    {
+      path: '/screen-live',
+      name: 'screen-live',
+      component: () => import('../views/ScreenLive/index.vue')
+    },
   ]
 })
 
