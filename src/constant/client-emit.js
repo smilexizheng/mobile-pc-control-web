@@ -3,6 +3,8 @@ export const CLIENT_EMIT_EVENTS = {
     JOIN_ROOM: 'join-room',
     LEAVE_ROOM: 'leave_room',
     MOBILE_SCREEN_SIZE: 'mobile_screen_size',
+    // 获取屏幕数据流的头
+    GET_SCREEN_STREAM_HEADER: 'get_screen_stream_header',
 
     // 输入事件
     TYPING: 'typing',
