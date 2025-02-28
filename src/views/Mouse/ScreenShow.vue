@@ -1,6 +1,7 @@
 <script setup>
 import {onMounted, ref} from 'vue';
 import {useSocketStore} from '@/stores/socket'
+import {useThrottleFn} from '@vueuse/core';
 
 const socketStore = useSocketStore();
 
@@ -9,10 +10,18 @@ const screenImg = ref(null);
 //   imageRendering: 'pixelated' // 低分辨率优化显示
 // });
 
+/**
+ * 防止频繁更新导致肉眼模糊
+ */
+const updateScreenImg = useThrottleFn((data) => {
+  const blob = new Blob([data.image]);
+  screenImg.value = URL.createObjectURL(blob);
+}, 16,true)
+
+
 onMounted(() => {
   socketStore.on('screen-data', (data) => {
-    const blob = new Blob([data.image]);
-    screenImg.value = URL.createObjectURL(blob);
+    updateScreenImg(data);
     // screenImg.value = `data:image/jpeg;base64,${data.image}`;
     // imgStyle.value = {
     //   width: `${data.width * 2}px`,  // 前端显示放大

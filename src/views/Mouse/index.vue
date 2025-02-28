@@ -65,8 +65,8 @@ const handleMove = (e) => {
 
   const touch = e.touches[0]
 
-  const deltaX = showScreen.value ? touchStartPos.value.x - touch.clientX : touch.clientX - touchStartPos.value.x
-  const deltaY = showScreen.value ? touchStartPos.value.y - touch.clientY : touch.clientY - touchStartPos.value.y
+  const deltaX = showScreen.value && !leftDown.value ? touchStartPos.value.x - touch.clientX : touch.clientX - touchStartPos.value.x
+  const deltaY = showScreen.value && !leftDown.value  ? touchStartPos.value.y - touch.clientY : touch.clientY - touchStartPos.value.y
 
   moveDistancePos.value.x = deltaX * 3
   moveDistancePos.value.y = deltaY * 2
@@ -106,7 +106,7 @@ const handleEnd = () => {
   }
 
   // 操作类型判断
-  if (!isMove.value) {
+  if (!isMove.value && !leftDown.value) {
     const currentTime = Date.now()
     const tapDuration = currentTime - touchStartPos.value.time
 
@@ -116,22 +116,13 @@ const handleEnd = () => {
     }
     // 单击/双击判断
     else if (tapDuration < 200) {
-      if (showScreen.value) {
-        let newVar = touchStartPos.value.x + (mousePos.value.x-padRef.value.offsetWidth/2);
-        let newVar2 = touchStartPos.value.y+ (mousePos.value.y-padRef.value.offsetHeight/2);
-       // alert(touchStartPos.value.x+">>>>"+mousePos.value.x+'>>'+padRef.value.offsetWidth/2+'>>'+newVar+'>'+newVar2)
-        socketStore.emit(CE.SYS_POINTER_MOVE, {
-          x:newVar-mousePos.value.x ,
-          y:newVar2-mousePos.value.y,
-        })
-      }
-
       if (currentTime - lastTapTime.value < 200) {
         clearTimeout(tapTimeout.value)
         tapCount.value = 0
         // 双击
         socketStore.emit(CE.SYS_MOUSE_CLICK, {button: "left", double: true})
       } else {
+        moveToTouchPos()
         // 单击
         tapCount.value = 1
         tapTimeout.value = setTimeout(() => {
@@ -151,6 +142,14 @@ const handleEnd = () => {
   socketStore.emit(CE.SYS_POINTER_END, null)
 }
 
+const moveToTouchPos = () => {
+  if (showScreen.value) {
+    socketStore.emit(CE.SYS_POINTER_MOVE, {
+      x:touchStartPos.value.x-padRef.value.offsetWidth/2,
+      y:touchStartPos.value.y-padRef.value.offsetHeight/2,
+    })
+  }
+}
 
 // 状态显示文本
 const statusText = computed(() => {
