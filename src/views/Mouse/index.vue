@@ -18,6 +18,8 @@ useTitle('PC 键鼠控制')
 const padRef = ref(null)
 // 起点
 const touchStartPos = ref({x: 0, y: 0, time: 0})
+// 鼠标指针位置
+const mousePos = ref({x: 0, y: 0})
 // 移动距离
 const moveDistancePos = ref({x: 0, y: 0})
 // 是否按下
@@ -54,7 +56,7 @@ const handleStart = (e) => {
   isDragging.value = true
   isMove.value = false
   leftDown.value = false
-  socketStore.emit(CE.SYS_POINTER_START, null)
+  socketStore.emit(CE.SYS_POINTER_START)
 }
 
 
@@ -62,11 +64,11 @@ const handleMove = (e) => {
   if (!isDragging.value) return
 
   const touch = e.touches[0]
-  const deltaX = touch.clientX - touchStartPos.value.x
-  const deltaY = touch.clientY - touchStartPos.value.y
+
+  const deltaX = showScreen.value ? touchStartPos.value.x - touch.clientX : touch.clientX - touchStartPos.value.x
+  const deltaY = showScreen.value ? touchStartPos.value.y - touch.clientY : touch.clientY - touchStartPos.value.y
 
   moveDistancePos.value.x = deltaX * 3
-
   moveDistancePos.value.y = deltaY * 2
 
   sendCoordinates()
@@ -114,6 +116,16 @@ const handleEnd = () => {
     }
     // 单击/双击判断
     else if (tapDuration < 200) {
+      if (showScreen.value) {
+        let newVar = touchStartPos.value.x + (mousePos.value.x-padRef.value.offsetWidth/2);
+        let newVar2 = touchStartPos.value.y+ (mousePos.value.y-padRef.value.offsetHeight/2);
+       // alert(touchStartPos.value.x+">>>>"+mousePos.value.x+'>>'+padRef.value.offsetWidth/2+'>>'+newVar+'>'+newVar2)
+        socketStore.emit(CE.SYS_POINTER_MOVE, {
+          x:newVar-mousePos.value.x ,
+          y:newVar2-mousePos.value.y,
+        })
+      }
+
       if (currentTime - lastTapTime.value < 200) {
         clearTimeout(tapTimeout.value)
         tapCount.value = 0
@@ -152,14 +164,14 @@ const statusText = computed(() => {
 const connectSocket = () => {
   sendCoordinates() // 发送初始坐标
   socketStore.on(CO.SYS_POINTER_POS, (res) => {
-    console.log(res)
-  })
+    mousePos.value = res
+  });
+  socketStore.emit(CE.SYS_POINTER_START)
 }
 
 // 生命周期
 onMounted(() => {
   connectSocket()
-  console.log(padRef.value.offsetWidth, padRef.value.offsetHeight)
   socketStore.emit(CE.MOBILE_SCREEN_SIZE, {
     screenSize: {
       width: padRef.value.offsetWidth,
@@ -194,10 +206,8 @@ watch(showScreen, (newVal) => {
         @touchend="handleEnd"
         :style="padStyle"
     >
-      x: {{ moveDistancePos.x }}
-      y: {{ moveDistancePos.y }}
-      {{ Date.now() - touchStartPos.time }}
-
+      x: {{ mousePos.x }}
+      y: {{ mousePos.y }}
     </div>
 
 
@@ -256,6 +266,7 @@ watch(showScreen, (newVal) => {
   height: 100%;
   border-radius: 10px;
   position: relative;
+  color: #00bd7e;
 }
 
 

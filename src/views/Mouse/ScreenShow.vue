@@ -52,8 +52,8 @@ onMounted(() => {
 .pointer {
   width: 30px;
   position: absolute;
-  top: 49%;
-  left: 49%;
+  top: 50%;
+  left: 50%;
 }
 
 .screen-img {

@@ -14,37 +14,42 @@ const socketStore = useSocketStore()
 const apps = ref([
   {
     categoryName: "系统操作", modules: [
-      {name: "桌面", color: "#4CAF50", event: CE.KEYPRESS, eventData: {key: "d", modifier: "command"}},
-      {name: "复制", color: "#2196F3", event: CE.KEYPRESS, eventData: {key: "c", modifier: "control"}},
-      {name: "粘贴", color: "#2196F3", event: CE.KEYPRESS, eventData: {key: "v", modifier: "control"}},
-      {name: "撤回", color: "#FF5722", event: CE.KEYPRESS, eventData: {key: "z", modifier: "control"}},
-      {name: "关机", color: "#FF5722", event: CE.SYS_SHUTDOWN}],
+      {name: "桌面", color: "#4CAF50", events:[ {event: CE.KEYPRESS, eventData: {key: "d", modifier: "command"}}]},
+      {name: "复制", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: "c", modifier: "control"}}]},
+      {name: "粘贴", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: "v", modifier: "control"}}]},
+      {name: "撤回", color: "#FF5722", events:[ {event: CE.KEYPRESS, eventData: {key: "z", modifier: "control"}}]},
+      {name: "关机", color: "#FF5722", events:[ {event: CE.SYS_SHUTDOWN}]}],
     showSysVolume: true
   },
   {
     categoryName: "网页", modules: [
-      {name: "腾讯视频", color: "#2196F3", event: CE.OPEN_URL, eventData: {url: "https://v.qq.com/"}},
-      {name: "B站", color: "#4CAF50", event: CE.OPEN_URL, eventData: {url: "https://www.bilibili.com/"}},
-      {name: "刷新", color: "#2196F3", event: CE.KEYPRESS, eventData: {key: "f5"}},
-      {name: "网页全屏", color: "#2196F3", event: CE.KEYPRESS, eventData: {key: "f11"}},
-      {name: "ESC", color: "#FF5722", event: CE.KEYPRESS, eventData: {key: "escape"}}
+      {name: "腾讯视频", color: "#2196F3", events:[ {event: CE.OPEN_URL, eventData: {url: "https://v.qq.com/"}}]},
+      {name: "视频全屏", color: "#2196F3", events:[
+          {event: CE.SYS_POINTER_MOVE, eventData: {x: 1230, y: 850}},
+          {event: CE.SYS_POINTER_MOVE, eventData: {x: 1438, y: 966},delay:10},
+          {event: CE.SYS_MOUSE_CLICK, eventData: {button: "left", double: false},delay:20}
+        ]},
+      {name: "刷新", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: "f5"}}]},
+      {name: "网页全屏", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: "f11"}}]},
+      {name: "ESC", color: "#FF5722", events:[ {event: CE.KEYPRESS, eventData: {key: "escape"}}]}
     ]
   },
 
   {
     categoryName: "QQ音乐", modules: [
-      {name: "上一首", color: "#4CAF50", event: CE.KEYPRESS, eventData: {key: "left", modifier: "control+alt"}},
-      {name: "下一首", color: "#2196F3", event: CE.KEYPRESS, eventData: {key: "right", modifier: "control+alt"}},
-      {name: "播放/暂停", color: "#FF5722", event: CE.KEYPRESS, eventData: {key: "f5", modifier: "control+alt"}},
-      {name: "+音量", color: "#4CAF50", event: CE.KEYPRESS, eventData: {key: "up", modifier: "control+alt"}},
-      {name: "-音量", color: "#2196F3", event: CE.KEYPRESS, eventData: {key: "down", modifier: "control+alt"}},
-      {name: "歌词显隐", color: "#2196F3", event: CE.KEYPRESS, eventData: {key: "w", modifier: "control+alt"}},
+      {name: "上一首", color: "#4CAF50", events:[ {event: CE.KEYPRESS, eventData: {key: "left", modifier: "control+alt"}}]},
+      {name: "下一首", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: "right", modifier: "control+alt"}}]},
+      {name: "播放/暂停", color: "#FF5722", events:[ {event: CE.KEYPRESS, eventData: {key: "f5", modifier: "control+alt"}}]},
+      {name: "+音量", color: "#4CAF50", events:[ {event: CE.KEYPRESS, eventData: {key: "up", modifier: "control+alt"}}]},
+      {name: "-音量", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: "down", modifier: "control+alt"}}]},
+      {name: "歌词显隐", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: "w", modifier: "control+alt"}}]},
     ]
   }, {
     categoryName: "应用", modules: [
       {name: "鼠标", color: "#4CAF50", action: "router", toLink: "/mouse"},
       {name: "桌面", color: "#4CAF50", action: "router", toLink: "/screen-live"},
-      {name: "Postman", color: "#4CAF50", event: CE.OPEN_APP, eventData: {name: "Postman"}},
+      {name: "B站", color: "#4CAF50", events:[ {event: CE.OPEN_URL, eventData: {url: "https://www.bilibili.com/"}}]},
+      {name: "Postman", color: "#4CAF50", events:[ {event: CE.OPEN_APP, eventData: {name: "Postman"}}]},
     ]
   },
 
@@ -67,9 +72,13 @@ const handleTouchEnd = (e) => {
  * @param item
  */
 const onClick = useDebounceFn((item) => {
-  if (item.event) {
+  if (item.events) {
     // socket事件
-    socketStore.emit(item.event, item.eventData);
+    item.events.forEach(event => {
+    setTimeout(()=>{
+      socketStore.emit(event.event, event.eventData);
+    },event.delay || 0)
+    })
   } else if (item.action) {
     // 其他动作
     switch (item.action) {
