@@ -28,11 +28,15 @@ const isTouch = ref(false)
 const isMove = ref(false)
 
 const leftDown = ref(false)
+
+//显示屏幕
 const [showScreen, toggleShowScreen] = useToggle(false)
+// 暂停更新屏幕
+const [pausedScreen, togglePausedScreen] = useToggle(false)
 
 
 // 添加双击相关状态
-const lastTapTime = ref(0)
+const lastTapTime = ref(Date.now())
 const tapTimeout = ref(null)
 const tapCount = ref(0)
 
@@ -49,9 +53,7 @@ const handleStart = (e) => {
     y: touch.clientY,
     time: Date.now()
   }
-  if (tapCount.value = 0) {
-    lastTapTime.value = Date.now()
-  }
+
 
   isTouch.value = true
   isMove.value = false
@@ -142,12 +144,24 @@ const handleEnd = () => {
   socketStore.emit(CE.SYS_POINTER_END, null)
 }
 
+
 const moveToTouchPos = () => {
   if (showScreen.value) {
+    togglePausedScreen()
     socketStore.emit(CE.SYS_POINTER_MOVE, {
       x:touchStartPos.value.x-padRef.value.offsetWidth/2,
       y:touchStartPos.value.y-padRef.value.offsetHeight/2,
     })
+    const oldPos = {x:mousePos.value.x,y:mousePos.value.y};
+    setTimeout(() => {
+      socketStore.emit(CE.SYS_POINTER_MOVE, {
+        x:oldPos.x,
+        y:oldPos.y,
+      })
+      setTimeout(() => {
+        togglePausedScreen()
+      },20)
+    },210)
   }
 }
 
@@ -160,17 +174,13 @@ const statusText = computed(() => {
   }[connectionStatus.value]
 })
 
-const connectSocket = () => {
-  sendCoordinates() // 发送初始坐标
-  socketStore.on(CO.SYS_POINTER_POS, (res) => {
-    mousePos.value = res
-  });
-  socketStore.emit(CE.SYS_POINTER_START)
-}
+
 
 // 生命周期
 onMounted(() => {
-  connectSocket()
+  socketStore.on(CO.SYS_POINTER_POS, (res) => {
+    mousePos.value = res
+  });
   socketStore.emit(CE.MOBILE_SCREEN_SIZE, {
     screenSize: {
       width: padRef.value.offsetWidth,
@@ -194,7 +204,7 @@ watch(showScreen, (newVal) => {
 </script>
 
 <template>
-  <ScreenShow v-show="showScreen"/>
+  <ScreenShow :is-paused="pausedScreen" v-show="showScreen"/>
   <div class="touchpad-container">
     <!-- 触控板区域 -->
     <div

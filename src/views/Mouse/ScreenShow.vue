@@ -5,7 +5,12 @@ import {useThrottleFn} from '@vueuse/core';
 
 const socketStore = useSocketStore();
 
+const props = defineProps(['isPaused'])
+
+
 const screenImg = ref(null);
+
+
 // const imgStyle = ref({
 //   imageRendering: 'pixelated' // 低分辨率优化显示
 // });
@@ -14,6 +19,7 @@ const screenImg = ref(null);
  * 防止频繁更新导致肉眼模糊
  */
 const updateScreenImg = useThrottleFn((data) => {
+  if(props.isPaused) return;
   const blob = new Blob([data.image]);
   screenImg.value = URL.createObjectURL(blob);
 }, 16,true)
@@ -34,7 +40,7 @@ onMounted(() => {
 
 <template>
   <div class="screen-show" v-if="screenImg">
-    <img :src="screenImg" class="screen-img"/>
+    <img alt="screen" :src="screenImg" class="screen-img"/>
   </div>
 </template>
 
