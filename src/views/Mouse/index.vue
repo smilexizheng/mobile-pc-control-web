@@ -205,7 +205,7 @@ watch(showScreen, (newVal) => {
         @touchend="handleEnd"
         :style="padStyle"
     >
-      <img v-show="isTouch" src="@/assets/icons/pointer.svg" class="pointer"/>
+      <img v-show="showScreen&&isTouch" src="@/assets/icons/pointer.svg" class="pointer"/>
       {{ mousePos.x }},{{ mousePos.y }}
     </div>
 
