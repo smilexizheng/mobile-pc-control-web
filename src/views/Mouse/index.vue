@@ -23,7 +23,7 @@ const mousePos = ref({x: 0, y: 0})
 // 移动距离
 const moveDistancePos = ref({x: 0, y: 0})
 // 是否按下
-const isDragging = ref(false)
+const isTouch = ref(false)
 // 是否已经移动
 const isMove = ref(false)
 
@@ -53,7 +53,7 @@ const handleStart = (e) => {
     lastTapTime.value = Date.now()
   }
 
-  isDragging.value = true
+  isTouch.value = true
   isMove.value = false
   leftDown.value = false
   socketStore.emit(CE.SYS_POINTER_START)
@@ -61,7 +61,7 @@ const handleStart = (e) => {
 
 
 const handleMove = (e) => {
-  if (!isDragging.value) return
+  if (!isTouch.value) return
 
   const touch = e.touches[0]
 
@@ -135,7 +135,7 @@ const handleEnd = () => {
       lastTapTime.value = currentTime
     }
   }
-  isDragging.value = false
+  isTouch.value = false
   isMove.value = false
 
   moveDistancePos.value = {x: 0, y: 0}
@@ -205,10 +205,9 @@ watch(showScreen, (newVal) => {
         @touchend="handleEnd"
         :style="padStyle"
     >
-      <img v-show="showScreen" src="@/assets/icons/pointer.svg" class="pointer"/>
+      <img v-show="isTouch" src="@/assets/icons/pointer.svg" class="pointer"/>
       {{ mousePos.x }},{{ mousePos.y }}
     </div>
-
 
     <!-- 连接状态 -->
     <div class="status" style="left:10px;top:20px;" @click="$router.push('/')">
