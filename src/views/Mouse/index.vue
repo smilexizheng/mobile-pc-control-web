@@ -205,17 +205,17 @@ watch(showScreen, (newVal) => {
         @touchend="handleEnd"
         :style="padStyle"
     >
-      x: {{ mousePos.x }}
-      y: {{ mousePos.y }}
+      <img v-show="showScreen" src="@/assets/icons/pointer.svg" class="pointer"/>
+      {{ mousePos.x }},{{ mousePos.y }}
     </div>
 
 
     <!-- 连接状态 -->
-    <div class="status" style="right:auto;left:20px;" @click="$router.push('/')">
+    <div class="status" style="left:10px;top:20px;" @click="$router.push('/')">
       返回
     </div>
-    <!-- 连接状态 -->
-    <div class="status">
+
+    <div class="status" style="right:10px;top:20px;">
       <span :class="['indicator', connectionStatus]"></span>
       {{ statusText }}
     </div>
@@ -268,6 +268,14 @@ watch(showScreen, (newVal) => {
   color: #00bd7e;
 }
 
+.pointer {
+  width: 30px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+
+
 
 .right-side {
   position: fixed;
@@ -285,12 +293,10 @@ watch(showScreen, (newVal) => {
 
 
 .status {
-  position: fixed;
-  top: 20px;
-  right: 20px;
+  position: absolute;
   background: rgba(0, 0, 0, 0.7);
   color: white;
-  padding: 8px 12px;
+  padding: 8px;
   border-radius: 8px;
   font-size: 14px;
 }

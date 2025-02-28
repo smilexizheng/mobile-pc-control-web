@@ -34,12 +34,11 @@ onMounted(() => {
 
 <template>
   <div class="screen-show" v-if="screenImg">
-    <img src="@/assets/icons/pointer.svg" class="pointer"/>
     <img :src="screenImg" class="screen-img"/>
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="less">
 .screen-show {
   position: absolute;
   z-index: 1;
@@ -58,12 +57,6 @@ onMounted(() => {
   }
 }
 
-.pointer {
-  width: 30px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-}
 
 .screen-img {
   border-radius: 10px;
