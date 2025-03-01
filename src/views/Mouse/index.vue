@@ -2,7 +2,7 @@
 import {computed, onMounted, ref, watch} from 'vue'
 import {useSocketStore} from '@/stores/socket'
 import TextInput from "@/views/Mouse/TextInput.vue";
-import {useTitle, useToggle} from "@vueuse/core";
+import {useTitle, useToggle,useResizeObserver} from "@vueuse/core";
 import {posThreshold} from "@/utils/common.js";
 import {CLIENT_ON_EVENTS as CO} from "@/constant/client-on.js";
 import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
@@ -42,6 +42,18 @@ const tapCount = ref(0)
 
 
 const connectionStatus = ref('disconnected') // disconnected/connecting/connected/error
+
+
+useResizeObserver(padRef, (entries) => {
+  const entry = entries[0]
+  const { width, height } = entry.contentRect
+  socketStore.emit(CE.MOBILE_SCREEN_SIZE, {
+    screenSize: {
+      width: width,
+      height: height
+    }
+  });
+})
 
 
 // 触摸事件处理
@@ -160,7 +172,7 @@ const moveToTouchPos = () => {
       })
       setTimeout(() => {
         togglePausedScreen()
-      },20)
+      },30)
     },210)
   }
 }
@@ -180,12 +192,6 @@ const statusText = computed(() => {
 onMounted(() => {
   socketStore.on(CO.SYS_POINTER_POS, (res) => {
     mousePos.value = res
-  });
-  socketStore.emit(CE.MOBILE_SCREEN_SIZE, {
-    screenSize: {
-      width: padRef.value.offsetWidth,
-      height: padRef.value.offsetHeight
-    }
   });
 })
 

@@ -10,7 +10,7 @@ const setHeight = () => {
     setRealViewportHeight()
 // 监听窗口变化
     window.addEventListener('resize', setRealViewportHeight)
-    // window.addEventListener('orientationchange', setRealViewportHeight)
+    window.addEventListener('orientationchange', setRealViewportHeight)
 }
 
 const posThreshold = (x,y,threshold) => {
