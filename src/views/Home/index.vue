@@ -5,6 +5,7 @@ import VolumeControl from "@/views/Home/VolumeControl.vue";
 import {useSocketStore} from '@/stores/socket'
 import {useRouter} from 'vue-router'
 import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
+import {Key} from "@/enums/key.enum.js";
 
 const router = useRouter()
 
@@ -14,7 +15,7 @@ const socketStore = useSocketStore()
 const apps = ref([
   {
     categoryName: "系统操作", modules: [
-      {name: "桌面", color: "#4CAF50", events:[ {event: CE.KEYPRESS, eventData: {key: "d", modifier: "command"}}]},
+      {name: "桌面", color: "#4CAF50", events:[ {event: CE.KEYPRESS, eventData: {key: Key.D, modifier: [Key.LeftWin]}}]},
       {name: "复制", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: "c", modifier: "control"}}]},
       {name: "粘贴", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: "v", modifier: "control"}}]},
       {name: "撤回", color: "#FF5722", events:[ {event: CE.KEYPRESS, eventData: {key: "z", modifier: "control"}}]},
@@ -27,7 +28,7 @@ const apps = ref([
       {name: "视频全屏", color: "#2196F3", events:[
           {event: CE.SYS_POINTER_MOVE, eventData: {x: 1230, y: 850}},
           {event: CE.SYS_POINTER_MOVE, eventData: {x: 1438, y: 966},delay:10},
-          {event: CE.SYS_MOUSE_CLICK, eventData: {button: "left", double: false},delay:20}
+          {event: CE.SYS_MOUSE_CLICK, eventData: {button: 0, double: false},delay:20}
         ]},
       {name: "刷新", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: "f5"}}]},
       {name: "网页全屏", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: "f11"}}]},

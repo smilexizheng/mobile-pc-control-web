@@ -99,7 +99,7 @@ const sendCoordinates =
         isMove.value = true;
         // 左键按下
         if (!leftDown.value && Date.now() - touchStartPos.value.time > 300) {
-          socketStore.emit(CE.SYS_MOUSE_TOGGLE, {down: "down", button: "left"})
+          socketStore.emit(CE.SYS_MOUSE_TOGGLE, {isPress: true, button: 0})
           leftDown.value = true;
         }
       }
@@ -115,7 +115,7 @@ const sendCoordinates =
 const handleEnd = () => {
   // 释放左键
   if (leftDown.value) {
-    socketStore.emit(CE.SYS_MOUSE_TOGGLE, {down: "up", button: "left"})
+    socketStore.emit(CE.SYS_MOUSE_TOGGLE, {isPress: false, button: 0})
     leftDown.value = false
   }
 
@@ -126,7 +126,7 @@ const handleEnd = () => {
 
     // 长按右键（500ms）
     if (tapDuration > 500) {
-      socketStore.emit(CE.SYS_MOUSE_CLICK, {button: "right", double: false})
+      socketStore.emit(CE.SYS_MOUSE_CLICK, {button: 2, double: false})
     }
     // 单击/双击判断
     else if (tapDuration < 200) {
@@ -134,14 +134,14 @@ const handleEnd = () => {
         clearTimeout(tapTimeout.value)
         tapCount.value = 0
         // 双击
-        socketStore.emit(CE.SYS_MOUSE_CLICK, {button: "left", double: true})
+        socketStore.emit(CE.SYS_MOUSE_CLICK, {button: 0, double: true})
       } else {
         moveToTouchPos()
         // 单击
         tapCount.value = 1
         tapTimeout.value = setTimeout(() => {
           if (tapCount.value === 1) {
-            socketStore.emit(CE.SYS_MOUSE_CLICK, {button: "left", double: false})
+            socketStore.emit(CE.SYS_MOUSE_CLICK, {button: 0, double: false})
           }
           tapCount.value = 0
         }, 200)
