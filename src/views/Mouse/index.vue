@@ -173,7 +173,7 @@ const moveToTouchPos = () => {
       setTimeout(() => {
         togglePausedScreen()
       },30)
-    },210)
+    },500)
   }
 }
 

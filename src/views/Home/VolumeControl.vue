@@ -7,7 +7,7 @@ import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
 const socketStore = useSocketStore()
 
 
-const volume = ref(0.1);
+const volume = ref(0);
 const isMuted = ref(false);
 onMounted(() => {
   socketStore.emit(CE.SYS_GET_VOLUME,null)
@@ -19,7 +19,7 @@ onMounted(() => {
 
 
 const toggleMute = () => {
-  socketStore.emit(CE.SYS_TOGGLE_MUTE,null)
+  socketStore.emit(CE.SYS_TOGGLE_MUTE)
 }
 
 const setVolume = () => {
@@ -56,7 +56,7 @@ const setVolume = () => {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   width: 96%;
   max-width: 400px;
-  margin: 20px auto;
+  margin: 10px auto;
 }
 
 

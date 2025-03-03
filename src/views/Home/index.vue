@@ -15,10 +15,10 @@ const socketStore = useSocketStore()
 const apps = ref([
   {
     categoryName: "系统操作", modules: [
-      {name: "桌面", color: "#4CAF50", events:[ {event: CE.KEYPRESS, eventData: {key: Key.D, modifier: [Key.LeftWin]}}]},
-      {name: "复制", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: "c", modifier: "control"}}]},
-      {name: "粘贴", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: "v", modifier: "control"}}]},
-      {name: "撤回", color: "#FF5722", events:[ {event: CE.KEYPRESS, eventData: {key: "z", modifier: "control"}}]},
+      {name: "桌面", color: "#4CAF50", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftWin,Key.D] }}]},
+      {name: "复制", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl, Key.C]}}]},
+      {name: "粘贴", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl, Key.V]}}]},
+      {name: "撤回", color: "#FF5722", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl, Key.Z]}}]},
       {name: "关机", color: "#FF5722", events:[ {event: CE.SYS_SHUTDOWN}]}],
     showSysVolume: true
   },
@@ -30,20 +30,20 @@ const apps = ref([
           {event: CE.SYS_POINTER_MOVE, eventData: {x: 1438, y: 966},delay:10},
           {event: CE.SYS_MOUSE_CLICK, eventData: {button: 0, double: false},delay:20}
         ]},
-      {name: "刷新", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: "f5"}}]},
-      {name: "网页全屏", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: "f11"}}]},
-      {name: "ESC", color: "#FF5722", events:[ {event: CE.KEYPRESS, eventData: {key: "escape"}}]}
+      {name: "刷新", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: Key.F5}}]},
+      {name: "网页全屏", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: Key.F11}}]},
+      {name: "ESC", color: "#FF5722", events:[ {event: CE.KEYPRESS, eventData: {key: Key.Escape}}]}
     ]
   },
 
   {
     categoryName: "QQ音乐", modules: [
-      {name: "上一首", color: "#4CAF50", events:[ {event: CE.KEYPRESS, eventData: {key: "left", modifier: "control+alt"}}]},
-      {name: "下一首", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: "right", modifier: "control+alt"}}]},
-      {name: "播放/暂停", color: "#FF5722", events:[ {event: CE.KEYPRESS, eventData: {key: "f5", modifier: "control+alt"}}]},
-      {name: "+音量", color: "#4CAF50", events:[ {event: CE.KEYPRESS, eventData: {key: "up", modifier: "control+alt"}}]},
-      {name: "-音量", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: "down", modifier: "control+alt"}}]},
-      {name: "歌词显隐", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: "w", modifier: "control+alt"}}]},
+      {name: "上一首", color: "#4CAF50", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl,Key.LeftAlt,Key.Left]}}]},
+      {name: "下一首", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl,Key.LeftAlt,Key.Right]}}]},
+      {name: "播放/暂停", color: "#FF5722", events:[ {event: CE.KEYPRESS, eventData: {key:  [Key.LeftControl,Key.LeftAlt,Key.F5]}}]},
+      {name: "+音量", color: "#4CAF50", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl,Key.LeftAlt,Key.Up]}}]},
+      {name: "-音量", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key:[Key.LeftControl,Key.LeftAlt,Key.Down]}}]},
+      {name: "歌词显隐", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl,Key.LeftAlt,Key.W]}}]},
     ]
   }, {
     categoryName: "应用", modules: [
