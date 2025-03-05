@@ -9,6 +9,7 @@ const props = defineProps(['isPaused'])
 
 
 const screenImg = ref(null);
+const screenMainStyle = ref({})
 
 
 // const imgStyle = ref({
@@ -22,6 +23,16 @@ const updateScreenImg = useThrottleFn((data) => {
   if(props.isPaused) return;
   const blob = new Blob([data.image]);
   screenImg.value = URL.createObjectURL(blob);
+
+  screenMainStyle.value={
+    width: `${data.width}px`,
+    height: `${data.height}px`,
+    left: `${data.left}px`,
+    right: `${data.right}px`,
+    top: `${data.top}px`,
+    bottom: `${data.bottom}px`,
+  }
+
 }, 16,true)
 
 
@@ -36,22 +47,33 @@ onMounted(() => {
     // };
   });
 });
+
+
 </script>
 
 <template>
-  <div class="screen-show" v-if="screenImg">
+  <div v-if="screenImg" class="screen-bg" :style='{width: screenMainStyle.width,height: screenMainStyle.height}'>
+  <div class="screen-show"  :style="screenMainStyle">
+
     <img alt="screen" :src="screenImg" class="screen-img"/>
+  </div>
   </div>
 </template>
 
 <style scoped lang="less">
+
+.screen-bg{
+  background-color: rgb(0, 0, 0);
+  position: absolute;
+  width: 373px;
+  height: 639px;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
 .screen-show {
   position: absolute;
   z-index: 1;
-  top: 10px;
-  right: 10px;
-  left: 10px;
-  bottom: 10px;
   overflow: hidden;
 
 
@@ -65,7 +87,7 @@ onMounted(() => {
 
 
 .screen-img {
-  border-radius: 10px;
+
   width: 100%;
 }
 

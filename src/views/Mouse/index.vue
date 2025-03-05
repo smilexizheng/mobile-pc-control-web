@@ -2,7 +2,7 @@
 import {computed, onMounted, ref, watch} from 'vue'
 import {useSocketStore} from '@/stores/socket'
 import TextInput from "@/views/Mouse/TextInput.vue";
-import {useTitle, useToggle,useResizeObserver} from "@vueuse/core";
+import {useTitle, useToggle, useResizeObserver} from "@vueuse/core";
 import {posThreshold} from "@/utils/common.js";
 import {CLIENT_ON_EVENTS as CO} from "@/constant/client-on.js";
 import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
@@ -46,7 +46,7 @@ const connectionStatus = ref('disconnected') // disconnected/connecting/connecte
 
 useResizeObserver(padRef, (entries) => {
   const entry = entries[0]
-  const { width, height } = entry.contentRect
+  const {width, height} = entry.contentRect
   socketStore.emit(CE.MOBILE_SCREEN_SIZE, {
     screenSize: {
       width: width,
@@ -80,7 +80,7 @@ const handleMove = (e) => {
   const touch = e.touches[0]
 
   const deltaX = showScreen.value && !leftDown.value ? touchStartPos.value.x - touch.clientX : touch.clientX - touchStartPos.value.x
-  const deltaY = showScreen.value && !leftDown.value  ? touchStartPos.value.y - touch.clientY : touch.clientY - touchStartPos.value.y
+  const deltaY = showScreen.value && !leftDown.value ? touchStartPos.value.y - touch.clientY : touch.clientY - touchStartPos.value.y
 
   moveDistancePos.value.x = deltaX * 3
   moveDistancePos.value.y = deltaY * 2
@@ -95,7 +95,7 @@ const sendCoordinates =
       if (!socketStore?.isConnected ||
           (moveDistancePos.value.x === 0 &&
               moveDistancePos.value.y === 0)) return
-      if (!isMove.value && posThreshold(moveDistancePos.value.x, moveDistancePos.value.y, 30)) {
+      if (!isMove.value && posThreshold(moveDistancePos.value.x, moveDistancePos.value.y, 15)) {
         isMove.value = true;
         // 左键按下
         if (!leftDown.value && Date.now() - touchStartPos.value.time > 300) {
@@ -161,19 +161,19 @@ const moveToTouchPos = () => {
   if (showScreen.value) {
     togglePausedScreen()
     socketStore.emit(CE.SYS_POINTER_MOVE, {
-      x:touchStartPos.value.x-padRef.value.offsetWidth/2,
-      y:touchStartPos.value.y-padRef.value.offsetHeight/2,
+      x: touchStartPos.value.x - padRef.value.offsetWidth / 2,
+      y: touchStartPos.value.y - padRef.value.offsetHeight / 2,
     })
-    const oldPos = {x:mousePos.value.x,y:mousePos.value.y};
+    const oldPos = {x: mousePos.value.x, y: mousePos.value.y};
     setTimeout(() => {
       socketStore.emit(CE.SYS_POINTER_MOVE, {
-        x:oldPos.x,
-        y:oldPos.y,
+        x: oldPos.x,
+        y: oldPos.y,
       })
       setTimeout(() => {
         togglePausedScreen()
-      },30)
-    },500)
+      }, 80)
+    }, 300)
   }
 }
 
@@ -187,7 +187,6 @@ const statusText = computed(() => {
 })
 
 
-
 // 生命周期
 onMounted(() => {
   socketStore.on(CO.SYS_POINTER_POS, (res) => {
@@ -198,6 +197,7 @@ onMounted(() => {
 const padStyle = ref({
   background: '#e3e2e2'
 })
+
 
 watch(showScreen, (newVal) => {
   socketStore.emit(newVal ? CE.JOIN_ROOM : CE.LEAVE_ROOM, {roomName: 'screen'});
@@ -210,7 +210,7 @@ watch(showScreen, (newVal) => {
 </script>
 
 <template>
-  <ScreenShow :is-paused="pausedScreen" v-show="showScreen"/>
+  <ScreenShow :is-paused="pausedScreen" v-show="showScreen" />
   <div class="touchpad-container">
     <!-- 触控板区域 -->
     <div
@@ -256,6 +256,7 @@ watch(showScreen, (newVal) => {
     <TextInput/>
   </div>
 
+
 </template>
 
 
@@ -289,7 +290,6 @@ watch(showScreen, (newVal) => {
   top: 50%;
   left: 50%;
 }
-
 
 
 .right-side {
