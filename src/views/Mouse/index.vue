@@ -10,6 +10,8 @@ import on_screen from "@/assets/icons/on_screen.svg"
 import off_screen from "@/assets/icons/off_screen.svg"
 import {useKeyBoardStore} from "@/stores/keyboardStore.js";
 import ScreenShow from "@/views/Mouse/ScreenShow.vue";
+import Modal from "@/components/ui/Modal.vue";
+import QuickMenu from "@/views/Mouse/QuickMenu.vue";
 
 const socketStore = useSocketStore()
 const keyBoard = useKeyBoardStore()
@@ -28,17 +30,18 @@ const isTouch = ref(false)
 const isMove = ref(false)
 
 const leftDown = ref(false)
+// 添加双击相关状态
+const lastTapTime = ref(Date.now())
+const tapTimeout = ref(null)
+const tapCount = ref(0)
 
 //显示屏幕
 const [showScreen, toggleShowScreen] = useToggle(false)
 // 暂停更新屏幕
 const [pausedScreen, togglePausedScreen] = useToggle(false)
 
+const showQuickMenu = ref(false)
 
-// 添加双击相关状态
-const lastTapTime = ref(Date.now())
-const tapTimeout = ref(null)
-const tapCount = ref(0)
 
 
 const connectionStatus = ref('disconnected') // disconnected/connecting/connected/error
@@ -236,6 +239,7 @@ watch(showScreen, (newVal) => {
     </div>
 
     <div class="right-side">
+      <img src="@/assets/icons/quick_menu.svg" alt="快捷操作" @click="showQuickMenu=true">
       <img :src=showScreen?on_screen:off_screen alt="显示屏幕" @click="toggleShowScreen()">
       <img src="@/assets/icons/roller_down.svg" alt="上" style="transform: rotate(180deg);"
            @touchstart.passive="keyBoard.startIntervalPress({event:CE.SYS_SCROLL_VERTICAL,eventData:true})">
@@ -255,6 +259,9 @@ watch(showScreen, (newVal) => {
 
     <TextInput/>
   </div>
+  <Modal v-model="showQuickMenu" title="快捷操作">
+    <QuickMenu />
+  </Modal>
 
 
 </template>
@@ -295,7 +302,7 @@ watch(showScreen, (newVal) => {
 .right-side {
   position: fixed;
   right: 2px;
-  top: 55%;
+  top: 50%;
   display: flex;
   flex-direction: column;
   align-items: center;

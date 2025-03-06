@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, ref} from 'vue';
+import {onMounted, ref,defineProps} from 'vue';
 import {useSocketStore} from '@/stores/socket'
 import {useThrottleFn} from '@vueuse/core';
 

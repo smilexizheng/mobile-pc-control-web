@@ -15,42 +15,24 @@ const socketStore = useSocketStore()
 // 模拟应用数据
 const apps = ref([
   {
-    categoryName: "快捷指令", modules: [
-      {name: "腾讯视频", color: "#2196F3", events:[ {event: CE.OPEN_URL, eventData: {url: "https://v.qq.com/"}}]},
-      {name: "视频全屏", color: "#2196F3", events:[
-          {event: CE.SYS_POINTER_MOVE, eventData: {x: 1230, y: 850}},
-          {event: CE.SYS_POINTER_MOVE, eventData: {x: 1438, y: 966},delay:10},
-          {event: CE.SYS_MOUSE_CLICK, eventData: {button: 0, double: false},delay:20}
-        ]},
-      {name: "刷新", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.F5]}}]},
-      {name: "网页全屏", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: Key.F11}}]},
-      {name: "ESC", color: "#FF5722", events:[ {event: CE.KEYPRESS, eventData: {key: Key.Escape}}]},
-      {name: "音乐上一首", color: "#4CAF50", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl,Key.LeftAlt,Key.Left]}}]},
-      {name: "音乐下一首", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl,Key.LeftAlt,Key.Right]}}]},
-      {name: "播放/暂停", color: "#FF5722", events:[ {event: CE.KEYPRESS, eventData: {key:  [Key.LeftControl,Key.LeftAlt,Key.F5]}}]},
-      // {name: "+音量", color: "#4CAF50", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl,Key.LeftAlt,Key.Up]}}]},
-      // {name: "-音量", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key:[Key.LeftControl,Key.LeftAlt,Key.Down]}}]},
-      {name: "歌词显隐", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl,Key.LeftAlt,Key.W]}}]},
-    ]
-  },
-
-  {
     categoryName: "系统", modules: [
+      {name: "关机", color: "#FF5722", events:[ {event: CE.SYS_SHUTDOWN}]},
       {name: "回桌面", color: "#4CAF50", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftWin,Key.D] }}]},
       {name: "复制", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl, Key.C]}}]},
       {name: "粘贴", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl, Key.V]}}]},
-      {name: "撤回", color: "#FF5722", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl, Key.Z]}}]},
-      {name: "关机", color: "#FF5722", events:[ {event: CE.SYS_SHUTDOWN}]}],
+      {name: "撤回", color: "#FF5722", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl, Key.Z]}}]}
+    ],
     showSysVolume: true
   },
   {
-    categoryName: "应用", modules: [
-      {name: "鼠标", color: "#4CAF50", action: "router", toLink: "/mouse"},
-      {name: "桌面", color: "#4CAF50", action: "router", toLink: "/screen-live"},
-      {name: "B站", color: "#4CAF50", events:[ {event: CE.OPEN_URL, eventData: {url: "https://www.bilibili.com/"}}]},
-      {name: "Postman", color: "#4CAF50", events:[ {event: CE.OPEN_APP, eventData: {name: "Postman"}}]},
+    categoryName: "快捷指令", modules: [
+      {name: "ESC", color: "#FF5722", events:[ {event: CE.KEYPRESS, eventData: {key: Key.Escape}}]},
+      {name: "刷新", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.F5]}}]},
+      {name: "网页全屏", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: Key.F11}}]},
     ]
   },
+
+
 
 ]);
 
@@ -99,12 +81,11 @@ const onClick = useDebounceFn((item) => {
     }
   }
 }, 300)
-
-
 </script>
 
 <template>
   <div class="ios-home-screen" v-if="socketStore.isConnected">
+    <EventModal/>
     <div class="app-area" v-for="(m,index) in apps" :key="'a'+index">
       <div class="area-title">{{ m.categoryName }}</div>
       <div class="app-grid">
@@ -174,8 +155,8 @@ const onClick = useDebounceFn((item) => {
 }
 
 .dingtalk-icon {
-  width: 64px;
-  height: 64px;
+  width: 54px;
+  height: 54px;
   border-radius: 16px;
   margin-bottom: 2px;
   display: flex;
