@@ -82,8 +82,8 @@ const handleMove = (e) => {
   const deltaX = showScreen.value && !leftDown.value ? touchStartPos.value.x - touch.clientX : touch.clientX - touchStartPos.value.x
   const deltaY = showScreen.value && !leftDown.value ? touchStartPos.value.y - touch.clientY : touch.clientY - touchStartPos.value.y
 
-  moveDistancePos.value.x = deltaX * 3
-  moveDistancePos.value.y = deltaY * 2
+  moveDistancePos.value.x = leftDown.value ? deltaX*2.5: deltaX * 3
+  moveDistancePos.value.y = leftDown.value ? deltaY*1.5: deltaY * 2
 
   sendCoordinates()
 }
@@ -95,7 +95,7 @@ const sendCoordinates =
       if (!socketStore?.isConnected ||
           (moveDistancePos.value.x === 0 &&
               moveDistancePos.value.y === 0)) return
-      if (!isMove.value && posThreshold(moveDistancePos.value.x, moveDistancePos.value.y, 15)) {
+      if (!isMove.value && posThreshold(moveDistancePos.value.x, moveDistancePos.value.y, 10)) {
         isMove.value = true;
         // 左键按下
         if (!leftDown.value && Date.now() - touchStartPos.value.time > 300) {
