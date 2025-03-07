@@ -54,7 +54,7 @@ defineExpose({
         <warning v-if="item.type === 'warning'" />
         <error v-if="item.type === 'error'" />
       </span>
-      <span class="text">{{ item.text }}</span>
+      <div class="text">{{ item.text }}</div>
     </div>
   </transition-group>
 </template>
@@ -66,11 +66,11 @@ defineExpose({
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  max-width: 240px;
-  padding: 8px 15px;
+  padding: 8px 10px;
   background: #fff;
   border-radius: 4px;
   display: flex;
+  margin-top: 20px;
   align-items: center;
   transition: all 0.3s cubic-bezier(0.78, 0.14, 0.15, 0.86);
   z-index: 10000;

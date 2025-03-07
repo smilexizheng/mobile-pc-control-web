@@ -37,6 +37,7 @@ export const useSocketStore = defineStore('socket', () => {
         if (!socket.value) {
             socket.value = io(import.meta.env.VITE_SOCKET_URL, {
                 autoConnect: true,
+                path:"/win-control.io",
                 transports: ['websocket']
             })
 
@@ -49,9 +50,14 @@ export const useSocketStore = defineStore('socket', () => {
             })
 
             socket.value.on(CO.RESPONSE, (data) => {
-                console.log("response>>>>>>>>" + JSON.stringify(data))
+                console.log("response>>" + JSON.stringify(data))
                 if (data.success) {
-                    Message.success('操作成功')
+                    // todo 某些事件不需要提示
+                    if(data.event.charAt(0)!== 's'){
+                        Message.success(data.msg ||data.event+'操作成功')
+                    }
+                }else {
+                    Message.error(data.msg ||data.event+'操作失败')
                 }
             })
         }
