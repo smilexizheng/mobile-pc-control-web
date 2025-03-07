@@ -3,7 +3,10 @@ import {io} from 'socket.io-client'
 import {ref} from "vue";
 import {CLIENT_ON_EVENTS as CO} from "@/constant/client-on.js";
 import {useIntervalFn} from "@vueuse/core";
-
+import router from "@/router/index.js";
+import {useDebounceFn} from '@vueuse/core'
+import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
+import Message from '@/components/Message/useMessage'
 
 /**
  *  持续触发 任意socket某个事件
@@ -46,7 +49,10 @@ export const useSocketStore = defineStore('socket', () => {
             })
 
             socket.value.on(CO.RESPONSE, (data) => {
-                console.log("response>>>>>>>>" + data)
+                console.log("response>>>>>>>>" + JSON.stringify(data))
+                if (data.success) {
+                    Message.success('操作成功')
+                }
             })
         }
     }
@@ -58,8 +64,6 @@ export const useSocketStore = defineStore('socket', () => {
     function emit(event, data) {
         socket.value?.emit(event, data)
     }
-
-
 
 
     const startEventInterval = (data) => {
@@ -84,12 +88,49 @@ export const useSocketStore = defineStore('socket', () => {
     }
 
 
+    const eventHandler = useDebounceFn((item) => {
+        if (item.events) {
+            // socket事件
+            item.events.forEach(event => {
+                setTimeout(() => {
+                    emit(event.event, event.eventData);
+                }, event.delay || 0)
+            })
+        } else if (item.action) {
+            // 其他动作
+            switch (item.action) {
+                case'router':
+                    router.push(item.toLink)
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            switch (item.name) {
+                case 'A':
+                    emit(CE.KEYPRESS, {key: [72]})
+                    break;
+                case '播放/暂停':
+                    emit(CE.KEYPRESS, {key: [109]})
+                    break;
+                default:
+                    alert(item.name + '没有符合定义的事件')
+                    break;
+            }
+        }
+    }, 100)
 
 
-
-
-
-
-
-    return {socket, isConnected, connect, disconnect, on, emit,startIntervalPress: startEventInterval, clearKeyEvent: stopEventInterval,  intervalIsRun}
+    return {
+        socket,
+        isConnected,
+        connect,
+        disconnect,
+        on,
+        emit,
+        eventHandler,
+        startIntervalPress: startEventInterval,
+        clearKeyEvent: stopEventInterval,
+        intervalIsRun
+    }
 })

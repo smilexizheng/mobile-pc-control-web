@@ -15,7 +15,7 @@ import QuickMenu from "@/views/Mouse/QuickMenu.vue";
 
 const socketStore = useSocketStore()
 const keyBoard = useKeyBoardStore()
-useTitle('PC 键鼠控制')
+useTitle('PControl')
 // 响应式状态
 const padRef = ref(null)
 // 起点
@@ -245,7 +245,7 @@ watch(showScreen, (newVal) => {
            @touchstart.passive="keyBoard.startIntervalPress({event:CE.SYS_SCROLL_VERTICAL,eventData:true})">
 
 
-      <div>
+      <div style="height: 40px">
         <img src="@/assets/icons/roller_down.svg" alt="左" style="transform: rotate(90deg);"
              @touchstart.passive="keyBoard.startIntervalPress({event:CE.SYS_SCROLL_HORIZONTAL,eventData:false})">
         <img src="@/assets/icons/roller_down.svg" alt="右" style="transform: rotate(270deg);"
@@ -259,7 +259,7 @@ watch(showScreen, (newVal) => {
 
     <TextInput/>
   </div>
-  <Modal v-model="showQuickMenu" title="快捷操作">
+  <Modal v-model="showQuickMenu" title="快捷操作" :showHeader="false" :backgroundNone="true" max-height="50vh" >
     <QuickMenu />
   </Modal>
 
@@ -310,6 +310,7 @@ watch(showScreen, (newVal) => {
 
   & img {
     width: 40px;
+    height: 40px;
   }
 }
 

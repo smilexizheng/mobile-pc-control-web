@@ -9,6 +9,7 @@ import {useSocketStore} from '@/stores/socket'
 
 const socketStore = useSocketStore()
 const keyBoard = useKeyBoardStore()
+
 onMounted(() => {
   socketStore.connect()
   setHeight()

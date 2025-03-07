@@ -31,6 +31,13 @@ const apps = ref([
       {name: "网页全屏", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: Key.F11}}]},
     ]
   },
+  {
+    categoryName: "自定义指令", modules: [
+      {name: "ESC", color: "#FF5722", events:[ {event: CE.KEYPRESS, eventData: {key: Key.Escape}}]},
+      {name: "刷新", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.F5]}}]},
+      {name: "网页全屏", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: Key.F11}}]},
+    ]
+  },
 
 
 
@@ -46,46 +53,12 @@ const handleTouchEnd = (e) => {
 };
 
 
-/**
- *
- * control  shift   alt
- * @param item
- */
-const onClick = useDebounceFn((item) => {
-  if (item.events) {
-    // socket事件
-    item.events.forEach(event => {
-    setTimeout(()=>{
-      socketStore.emit(event.event, event.eventData);
-    },event.delay || 0)
-    })
-  } else if (item.action) {
-    // 其他动作
-    switch (item.action) {
-      case'router':
-        router.push(item.toLink)
-        break;
-      default:
-        break;
-    }
-  } else {
-    switch (item.name) {
-      case 'A':
-        socketStore.keypress({key: 'a', modifier: ''});
-        break;
-      case '播放/暂停':
-        socketStore.keypress({key: 'space', modifier: ''});
-        break;
-      default:
-        break;
-    }
-  }
-}, 300)
+
 </script>
 
 <template>
   <div class="ios-home-screen" v-if="socketStore.isConnected">
-    <EventModal/>
+<!--    <EventModal/>-->
     <div class="app-area" v-for="(m,index) in apps" :key="'a'+index">
       <div class="area-title">{{ m.categoryName }}</div>
       <div class="app-grid">
@@ -95,16 +68,15 @@ const onClick = useDebounceFn((item) => {
             class="app-icon"
             @touchstart="handleTouchStart"
             @touchend="handleTouchEnd"
-            @click="onClick(module)"
+            @click="socketStore.eventHandler(module)"
         >
-          <!-- 钉钉风格图标 -->
+
           <div
               class="dingtalk-icon"
               :style="{ backgroundColor: module.color }"
           >
-            {{ module.name.charAt(0) }}
+            {{ module.name }}
           </div>
-          <div class="app-label">{{ module.name }}</div>
         </div>
       </div>
       <VolumeControl v-if="m.showSysVolume"/>
@@ -123,7 +95,6 @@ const onClick = useDebounceFn((item) => {
 }
 
 .app-area {
-  background: #fff;
   border-radius: 10px;
   padding: 5px;
   margin-bottom: 8px;
@@ -133,6 +104,7 @@ const onClick = useDebounceFn((item) => {
   font-weight: bold;
   font-size: 16px;
   margin-bottom: 6px;
+  color: #59fd06;
 }
 
 .app-grid {
@@ -157,13 +129,13 @@ const onClick = useDebounceFn((item) => {
 .dingtalk-icon {
   width: 54px;
   height: 54px;
-  border-radius: 16px;
-  margin-bottom: 2px;
+  border-radius: 10px;
+  margin-bottom: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 24px;
+  font-size: 14px;
   font-weight: 500;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s,
@@ -173,39 +145,6 @@ const onClick = useDebounceFn((item) => {
 .app-icon:active .dingtalk-icon {
   transform: scale(0.92);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-.app-label {
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 13px;
-  color: #333;
-  text-align: center;
-  line-height: 1.4;
-  max-width: 80px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-}
-
-
-/* 响应式调整 */
-@media (max-width: 375px) {
-  .dingtalk-icon {
-    width: 56px;
-    height: 56px;
-    font-size: 20px;
-  }
-
-}
-
-@media (min-width: 768px) {
-  .dingtalk-icon {
-    width: 72px;
-    height: 72px;
-    font-size: 28px;
-  }
 }
 
 

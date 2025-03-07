@@ -10,7 +10,7 @@ const CE = {
 
 const isModalOpen = ref(false)
 const event = ref({
-  name: '自定义', color: '#44e5b8', events: [
+  name: '控制键鼠', color: '#44e5b8', events: [
     {
       event: CE.SYS_POINTER_MOVE,
       eventData: {x: 0, y: 0},
@@ -32,7 +32,7 @@ const addEvent = () => {
 }
 
 const removeEvent = (index) => {
-  event.value.splice(index, 1)
+  event.value.events.splice(index, 1)
 }
 
 const submitEvents = () => {
@@ -51,9 +51,9 @@ const cancel = () => {
 
   <button class="ios-button" @click="openModal">添加事件</button>
 
-  <Modal v-model="isModalOpen" title="添加快捷操作">
+  <Modal v-model="isModalOpen" title="添加自定义操作">
     <!-- 可滚动内容区域 -->
-    <div class="scroll-content">
+<!--    <div class="scroll-content">-->
       <div class="event-list">
         <!-- 事件名称和颜色 -->
         <div class="form-group">
@@ -154,17 +154,17 @@ const cancel = () => {
 
 
       </div>
-    </div>
+<!--    </div>-->
     <template #actions>
       <!-- 底部固定操作栏 -->
-      <div class="modal-actions">
+<!--      <div class="modal-actions">-->
         <button class="ios-button secondary" @click="addEvent">
           新增事件
         </button>
         <button class="ios-button primary" @click="submitEvents">
           完成配置（共{{ event.events.length }}项）
         </button>
-      </div>
+<!--      </div>-->
     </template>
   </Modal>
 
@@ -172,34 +172,6 @@ const cancel = () => {
 
 
 <style scoped>
-/* iOS 风格样式 */
-.container {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell;
-}
-
-
-.ios-modal {
-  display: flex;
-  flex-direction: column;
-  max-height: 80vh;
-  min-height: 70vh; /* 固定高度 */
-}
-
-/* 交互动画 */
-.modal-enter-active, .modal-leave-active {
-  transition: opacity 0.3s;
-}
-
-.modal-enter-from, .modal-leave-to {
-  opacity: 0;
-}
-
-.scroll-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 0 8px;
-  margin: 12px 0;
-}
 
 /* 颜色选择器样式 */
 .color-picker {
@@ -221,60 +193,7 @@ const cancel = () => {
   color: #666;
 }
 
-/* 优化底部操作栏 */
-.modal-actions {
-  position: sticky;
-  bottom: 0;
-  background: white;
-  padding-top: 12px;
-  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
-}
 
-/* 遮罩层优化 */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(2px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-/* iOS 模态框样式 */
-.ios-modal {
-  background: #ffffff;
-  width: 90%;
-  max-width: 400px;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  padding: 16px;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.modal-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1d1d1f;
-}
-
-.close-button {
-  background: none;
-  border: none;
-  font-size: 24px;
-  color: #86868b;
-  padding: 8px;
-}
 
 /* 表单元素样式 */
 .form-group {

@@ -64,41 +64,7 @@ const handleTouchEnd = (e) => {
 };
 
 
-/**
- *
- * control  shift   alt
- * @param item
- */
-const onClick = useDebounceFn((item) => {
-  if (item.events) {
-    // socket事件
-    item.events.forEach(event => {
-    setTimeout(()=>{
-      socketStore.emit(event.event, event.eventData);
-    },event.delay || 0)
-    })
-  } else if (item.action) {
-    // 其他动作
-    switch (item.action) {
-      case'router':
-        router.push(item.toLink)
-        break;
-      default:
-        break;
-    }
-  } else {
-    switch (item.name) {
-      case 'A':
-        socketStore.keypress({key: 'a', modifier: ''});
-        break;
-      case '播放/暂停':
-        socketStore.keypress({key: 'space', modifier: ''});
-        break;
-      default:
-        break;
-    }
-  }
-}, 300)
+
 
 
 </script>
@@ -114,7 +80,7 @@ const onClick = useDebounceFn((item) => {
             class="app-icon"
             @touchstart="handleTouchStart"
             @touchend="handleTouchEnd"
-            @click="onClick(module)"
+            @click="socketStore.eventHandler(module)"
         >
           <!-- 钉钉风格图标 -->
           <div
