@@ -12,6 +12,7 @@ import {useKeyBoardStore} from "@/stores/keyboardStore.js";
 import ScreenShow from "@/views/Mouse/ScreenShow.vue";
 import Modal from "@/components/ui/Modal.vue";
 import QuickMenu from "@/views/Mouse/QuickMenu.vue";
+import {Key} from "@/enums/key.enum.js";
 
 const socketStore = useSocketStore()
 const keyBoard = useKeyBoardStore()
@@ -224,7 +225,7 @@ watch(showScreen, (newVal) => {
         @touchend="handleEnd"
         :style="padStyle"
     >
-      <img v-show="showScreen&&isTouch" src="@/assets/icons/pointer.svg" class="pointer"/>
+      <img v-show="showScreen&&isTouch" src="@/assets/icons/pointer.svg" class="pointer" alt="鼠标指针"/>
       {{ mousePos.x }},{{ mousePos.y }}
     </div>
 
@@ -239,6 +240,7 @@ watch(showScreen, (newVal) => {
     </div>
 
     <div class="right-side">
+
       <img src="@/assets/icons/quick_menu.svg" alt="快捷操作" @click="showQuickMenu=true">
       <img :src=showScreen?on_screen:off_screen alt="显示屏幕" @click="toggleShowScreen()">
       <img src="@/assets/icons/roller_down.svg" alt="上" style="transform: rotate(180deg);"

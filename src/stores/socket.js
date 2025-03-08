@@ -106,7 +106,7 @@ export const useSocketStore = defineStore('socket', () => {
             // 其他动作
             switch (item.action) {
                 case'router':
-                    router.push(item.toLink)
+                    router.push(item.toLink).then()
                     break;
                 default:
                     break;

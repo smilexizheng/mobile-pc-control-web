@@ -4,8 +4,8 @@ import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
 import {useIntervalFn, useToggle} from "@vueuse/core";
 import {useSocketStore} from "@/stores/socket.js";
 
-// 持续触发某个事件
-// @touchstart.passive="keyBoard.startIntervalPress({event:CE.KEYPRESS,eventData:{key:'pageup'}})"
+// 点按某个事件
+// @touchstart.passive="keyBoard.startIntervalPress({event:CE.KEY_TOGGLE,eventData:{key:[Key.PageUp]}})"
 // 全局监听抬起 会自动释放 emit 键盘up
 export const useKeyBoardStore = defineStore('keyboardStore', () => {
 
@@ -28,19 +28,29 @@ export const useKeyBoardStore = defineStore('keyboardStore', () => {
     }, 50)
 
 
+    /**
+     * 键盘事件
+     * @param params
+     */
     function keypress(params) {
         socket.emit(CE.KEYPRESS, params)
     }
 
+    /**
+     * 长按 抬起事件
+     * <img src="@/assets/icons/quick_menu.svg" alt="快捷操作" @touchstart.passive="keyBoard.keyToggle({key:[Key.A]})">
+     *     效果不是人为按下键盘那样一直键入，可以使用下面方法 @startIntervalPress 定时一直发送事件
+     * @param params
+     */
     function keyToggle(params) {
         if (isToggle.value) {
-            socket.emit(CE.KEY_TOGGLE, {...keyToggleData.value, down: "up"});
+            socket.emit(CE.KEY_TOGGLE, {...keyToggleData.value, down: false});
             isToggle.value =false;
         }
         if (params) {
             keyToggleData.value = {...params};
             console.log(keyToggleData.value)
-            socket.emit(CE.KEY_TOGGLE, {...params, down: "down"})
+            socket.emit(CE.KEY_TOGGLE, {...params, down: true})
             isToggle.value =true;
         }
 
@@ -48,6 +58,11 @@ export const useKeyBoardStore = defineStore('keyboardStore', () => {
     }
 
 
+    /**
+     * 连续点按
+     * @touchstart.passive="keyBoard.startIntervalPress({event:CE.KEY_TOGGLE,eventData:{key:[Key.PageUp]}})"
+     * @param data
+     */
     const startIntervalPress = (data) => {
         keyboardData.value = {...data};
         intervalPressResume();
