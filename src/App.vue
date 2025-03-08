@@ -17,6 +17,9 @@ onMounted(() => {
   useEventListener(document, ['mouseup', 'touchend', 'dragend'], () => {
     keyBoard.clearKeyEvent()
   })
+
+
+
 })
 
 </script>

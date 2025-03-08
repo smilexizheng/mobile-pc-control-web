@@ -261,10 +261,9 @@ watch(showScreen, (newVal) => {
 
     <TextInput/>
   </div>
-  <Modal v-model="showQuickMenu" title="快捷操作" :showHeader="false" :backgroundNone="true" max-height="50vh" >
+  <Modal v-model="showQuickMenu" title="快捷操作" :showHeader="false" :backgroundNone="true" max-height="60vh" >
     <QuickMenu />
   </Modal>
-
 
 </template>
 

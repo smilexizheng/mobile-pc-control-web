@@ -1,17 +1,17 @@
 <script setup>
 import {onMounted, ref} from 'vue';
-import {useDebounceFn} from '@vueuse/core'
 import VolumeControl from "@/views/Home/VolumeControl.vue";
 import {useSocketStore} from '@/stores/socket'
 import {useRouter} from 'vue-router'
 import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
 import {Key} from "@/enums/key.enum.js";
-import EventModal from "@/components/ui/EventModal.vue";
+import {LocalEventStore} from "@/stores/localEventStore.js";
 
 const router = useRouter()
 
 const socketStore = useSocketStore()
 
+const localEventStore = LocalEventStore()
 // 模拟应用数据
 const apps = ref([
   {
@@ -31,6 +31,7 @@ const apps = ref([
       // {name: "+音量", color: "#4CAF50", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl,Key.LeftAlt,Key.Up]}}]},
       // {name: "-音量", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key:[Key.LeftControl,Key.LeftAlt,Key.Down]}}]},
       {name: "歌词显隐", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl,Key.LeftAlt,Key.W]}}]},
+      {name: "B站", color: "#4CAF50", events:[ {event: CE.OPEN_URL, eventData: {url: "https://www.bilibili.com/"}}]},
     ]
   },
 
@@ -47,7 +48,7 @@ const apps = ref([
     categoryName: "应用", modules: [
       {name: "鼠标", color: "#4CAF50", action: "router", toLink: "/mouse"},
       {name: "桌面", color: "#4CAF50", action: "router", toLink: "/screen-live"},
-      {name: "B站", color: "#4CAF50", events:[ {event: CE.OPEN_URL, eventData: {url: "https://www.bilibili.com/"}}]},
+      {name: "事件配置", color: "#4CAF50", action: "router", toLink: "/event-config"},
       {name: "Postman", color: "#4CAF50", events:[ {event: CE.OPEN_APP, eventData: {name: "Postman"}}]},
     ]
   },
@@ -93,6 +94,31 @@ const handleTouchEnd = (e) => {
         </div>
       </div>
       <VolumeControl v-if="m.showSysVolume"/>
+    </div>
+
+
+    <div class="app-area">
+      <div class="area-title">自定义事件</div>
+      <div class="app-grid">
+        <div
+            v-for="(module, index) in localEventStore.customEvents"
+            :key="index"
+            class="app-icon"
+            @touchstart="handleTouchStart"
+            @touchend="handleTouchEnd"
+            @click="socketStore.eventHandler(module)"
+        >
+
+          <div
+              class="dingtalk-icon"
+              :style="{ backgroundColor: module.color }"
+          >
+            {{ module.name.charAt(0) }}
+          </div>
+          <div class="app-label">{{ module.name }}</div>
+
+        </div>
+      </div>
     </div>
 
   </div>

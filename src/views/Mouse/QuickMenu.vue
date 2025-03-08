@@ -6,7 +6,11 @@ import {useSocketStore} from '@/stores/socket'
 import {useRouter} from 'vue-router'
 import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
 import {Key} from "@/enums/key.enum.js";
-import EventModal from "@/components/ui/EventModal.vue";
+import EventModal from "@/components/event/EventModal.vue";
+import {LocalEventStore} from "@/stores/localEventStore.js";
+
+
+const localEventStore = LocalEventStore()
 
 const router = useRouter()
 
@@ -23,23 +27,7 @@ const apps = ref([
       {name: "撤回", color: "#FF5722", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl, Key.Z]}}]}
     ],
     showSysVolume: true
-  },
-  {
-    categoryName: "快捷指令", modules: [
-      {name: "ESC", color: "#FF5722", events:[ {event: CE.KEYPRESS, eventData: {key: Key.Escape}}]},
-      {name: "刷新", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.F5]}}]},
-      {name: "网页全屏", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: Key.F11}}]},
-    ]
-  },
-  {
-    categoryName: "自定义指令", modules: [
-      {name: "ESC", color: "#FF5722", events:[ {event: CE.KEYPRESS, eventData: {key: Key.Escape}}]},
-      {name: "刷新", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.F5]}}]},
-      {name: "网页全屏", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: Key.F11}}]},
-    ]
-  },
-
-
+  }
 
 ]);
 
@@ -58,7 +46,7 @@ const handleTouchEnd = (e) => {
 
 <template>
   <div class="ios-home-screen" v-if="socketStore.isConnected">
-<!--    <EventModal/>-->
+
     <div class="app-area" v-for="(m,index) in apps" :key="'a'+index">
       <div class="area-title">{{ m.categoryName }}</div>
       <div class="app-grid">
@@ -82,6 +70,30 @@ const handleTouchEnd = (e) => {
       <VolumeControl v-if="m.showSysVolume"/>
     </div>
 
+
+    <div class="app-area">
+      <div class="area-title">自定义功能</div>
+      <div class="app-grid">
+        <div
+            v-for="(module, index) in localEventStore.customEvents"
+            :key="index"
+            class="app-icon"
+            @touchstart="handleTouchStart"
+            @touchend="handleTouchEnd"
+            @click="socketStore.eventHandler(module)"
+        >
+
+          <div
+              class="dingtalk-icon"
+              :style="{ backgroundColor: module.color }"
+          >
+            {{ module.name }}
+          </div>
+
+        </div>
+      </div>
+    </div>
+
   </div>
   <div v-else>加载中...</div>
 </template>
@@ -92,6 +104,7 @@ const handleTouchEnd = (e) => {
   overflow: auto;
   /* 移除点击高亮 */
   -webkit-tap-highlight-color: transparent;
+  touch-action: auto;
 }
 
 .app-area {

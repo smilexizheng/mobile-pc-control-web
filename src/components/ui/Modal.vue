@@ -1,8 +1,7 @@
-
 <script setup>
-import { defineProps, defineEmits } from 'vue'
+import {defineEmits, defineProps} from 'vue'
 
-const props = defineProps({
+defineProps({
   modelValue: {
     type: Boolean,
     required: true
@@ -19,15 +18,14 @@ const props = defineProps({
     type: [String, Number],
     default: '80vh'
   },
-    showHeader: {
-      type: Boolean,
-      default: true
-    },
-    backgroundNone: {
-      type: Boolean,
-      default: false
-    }
-
+  showHeader: {
+    type: Boolean,
+    default: true
+  },
+  backgroundNone: {
+    type: Boolean,
+    default: false
+  }
 
 
 })
@@ -42,7 +40,8 @@ const handleClose = () => {
 
 <template>
   <transition name="modal">
-    <div v-if="modelValue" class="modal-overlay"  @click.self="handleClose" :style="{ backdropFilter:  backgroundNone ? 'none':'blur(2px)', background: backgroundNone ? 'none' : 'rgba(0, 0, 0, 0.5)' }">
+    <div v-if="modelValue" class="modal-overlay" @click.self="handleClose"
+         :style="{ backdropFilter:  backgroundNone ? 'none':'blur(2px)', background: backgroundNone ? 'none' : 'rgba(0, 0, 0, 0.5)' }">
       <div
           class="modal"
           :style="{ height:  typeof maxHeight === 'number' ? `${width}px` : maxHeight, width: typeof width === 'number' ? `${width}px` : width,background: backgroundNone ? 'none' : '#fff' }">
@@ -67,7 +66,7 @@ const handleClose = () => {
 </template>
 
 
-<style scoped>
+<style scoped lang="less">
 /* 保持原有样式 */
 .modal-overlay {
   position: fixed;
