@@ -4,7 +4,6 @@ import EventModal from "@/components/event/EventModal.vue";
 import {LocalEventStore} from "@/stores/localEventStore.js";
 import Modal from "@/components/ui/Modal.vue";
 import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
-import {n} from "../../../dist/assets/index-3xRjjA86.js";
 
 
 const localEventStore = LocalEventStore()
