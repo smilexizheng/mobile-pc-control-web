@@ -28,7 +28,7 @@ const router = createRouter({
     {
       path: '/event-config',
       name: 'event-config',
-      component: () => EventConfig,
+      component: EventConfig,
     },
   ]
 })
