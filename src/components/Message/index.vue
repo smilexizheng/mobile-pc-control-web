@@ -1,6 +1,6 @@
 
 <script setup>
-import { ref, defineExpose} from 'vue'
+import { ref} from 'vue'
 import Success from './icons/Success.vue'
 import Warning from './icons/Warning.vue'
 import Error from './icons/Error.vue'

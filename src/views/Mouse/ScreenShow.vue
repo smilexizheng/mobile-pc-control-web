@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, ref,defineProps} from 'vue';
+import {onMounted, ref} from 'vue';
 import {useSocketStore} from '@/stores/socket'
 import {useThrottleFn} from '@vueuse/core';
 
@@ -8,21 +8,27 @@ const socketStore = useSocketStore();
 const props = defineProps(['isPaused'])
 
 
-const screenImg = ref(null);
+const showScreenRef = ref(null);
 const screenMainStyle = ref({})
+let ctx;
 
 
-// const imgStyle = ref({
-//   imageRendering: 'pixelated' // 低分辨率优化显示
-// });
 
 /**
  * 防止频繁更新导致肉眼模糊
  */
-const updateScreenImg = useThrottleFn((data) => {
+const updateScreenImg =
+    // useThrottleFn(
+    (data) => {
   if(props.isPaused) return;
   const blob = new Blob([data.image]);
-  screenImg.value = URL.createObjectURL(blob);
+  createImageBitmap(blob).then((img) => {
+    showScreenRef.value.width = img.width;
+    showScreenRef.value.height = img.height;
+    ctx.clearRect(0, 0, img.width, img.height);
+    ctx.drawImage(img, 0, 0);
+  });
+  // showScreenRef.value = URL.createObjectURL(blob);
 
   screenMainStyle.value={
     width: `${data.width}px`,
@@ -33,29 +39,28 @@ const updateScreenImg = useThrottleFn((data) => {
     bottom: `${data.bottom}px`,
   }
 
-}, 16,true)
+}
+// , 16,true)
 
 
 onMounted(() => {
+  ctx = showScreenRef.value.getContext('2d');
   socketStore.on('screen-data', (data) => {
     updateScreenImg(data);
-    // screenImg.value = `data:image/jpeg;base64,${data.image}`;
-    // imgStyle.value = {
-    //   width: `${data.width * 2}px`,  // 前端显示放大
-    //   height: `${data.height * 2}px`,
-    //   imageRendering: 'crisp-edges'
-    // };
   });
 });
+
+
 
 
 </script>
 
 <template>
-  <div v-if="screenImg" class="screen-bg" :style='{width: screenMainStyle.width,height: screenMainStyle.height}'>
+  <div class="screen-bg" :style='{width: screenMainStyle.width,height: screenMainStyle.height}'>
   <div class="screen-show"  :style="screenMainStyle">
+    <canvas ref="showScreenRef"></canvas>
+<!--    <img alt="screen" :src="showScreenRef" class="screen-img"/>-->
 
-    <img alt="screen" :src="screenImg" class="screen-img"/>
   </div>
   </div>
 </template>
@@ -87,8 +92,9 @@ onMounted(() => {
 
 
 .screen-img {
-
   width: 100%;
 }
+
+
 
 </style>

@@ -1,5 +1,4 @@
 <script setup>
-import {defineProps} from 'vue'
 import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
 
 
