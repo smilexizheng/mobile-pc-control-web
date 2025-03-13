@@ -20,7 +20,6 @@ const editEvent = ref({
 })
 
 const handleEdit = (index) => {
-  console.log('编辑项目:', index);
   editEvent.value = localEventStore.customEvents[index]
   editIndex.value = index
   eventModalOpen.value = true

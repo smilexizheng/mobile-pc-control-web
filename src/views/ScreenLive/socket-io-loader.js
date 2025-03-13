@@ -40,7 +40,6 @@ class SocketIoLoader extends BaseLoader {
 
     open(dataSource) {
         this._dataConfig = dataSource;
-        console.log("SocketIoLoader open",dataSource)
         this._flvHeaderPatched = false;
         try {
             // let ws = this._ws = new self.WebSocket(dataSource.url);

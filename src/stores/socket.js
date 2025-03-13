@@ -50,7 +50,7 @@ export const useSocketStore = defineStore('socket', () => {
             })
 
             socket.value.on(CO.RESPONSE, (data) => {
-                console.log("response>>" + JSON.stringify(data))
+                // console.log("response>>" + JSON.stringify(data))
                 if (data.success) {
                     // todo 某些事件不需要提示
                     if(data.event.charAt(0)!== 's'){

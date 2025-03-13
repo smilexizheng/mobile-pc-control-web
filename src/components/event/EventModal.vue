@@ -27,7 +27,6 @@ const removeEvent = (index) => {
 
 const submitEvents = () => {
   // 提交事件处理逻辑
-  console.log('提交的事件数据:', props.event)
   props.ok()
 }
 

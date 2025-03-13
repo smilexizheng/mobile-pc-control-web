@@ -27,7 +27,6 @@ function createSocketIOLoader(socket) {
       open: async function (response) {
         // 向服务器请求开始流传输
         // socket.emit('start_stream');
-        console.log('开始流传输')
         // 监听二进制数据事件
           socket.on('flv_data', (data) => {
           if (isDestroyed) return;

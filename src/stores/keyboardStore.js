@@ -49,7 +49,6 @@ export const useKeyBoardStore = defineStore('keyboardStore', () => {
         }
         if (params) {
             keyToggleData.value = {...params};
-            console.log(keyToggleData.value)
             socket.emit(CE.KEY_TOGGLE, {...params, down: true})
             isToggle.value =true;
         }
