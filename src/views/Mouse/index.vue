@@ -1,5 +1,5 @@
 <script setup>
-import {computed, onMounted, ref, watch} from 'vue'
+import {computed, onMounted, ref, watch,onUnmounted} from 'vue'
 import {useSocketStore} from '@/stores/socket'
 import TextInput from "@/views/Mouse/TextInput.vue";
 import {useTitle, useToggle, useResizeObserver} from "@vueuse/core";
@@ -176,8 +176,8 @@ const moveToTouchPos = () => {
       })
       setTimeout(() => {
         togglePausedScreen()
-      }, 80)
-    }, 300)
+      }, 100)
+    }, 250)
   }
 }
 
@@ -208,6 +208,11 @@ watch(showScreen, (newVal) => {
   padStyle.value = {
     background: newVal ? 'none' : '#e3e2e2'
   }
+})
+
+onUnmounted(() => {
+  showScreen.value = false
+  socketStore.off(CO.SYS_POINTER_POS)
 })
 
 

@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, ref} from 'vue';
+import {onMounted, ref,onUnmounted} from 'vue';
 import {useSocketStore} from '@/stores/socket'
 import {useThrottleFn} from '@vueuse/core';
 import Message from "@/components/Message/UseMessage.js";
@@ -52,6 +52,11 @@ onMounted(() => {
     updateScreenImg(data);
   });
 });
+
+
+onUnmounted(() => {
+  socketStore.off('screen-data');
+})
 
 
 

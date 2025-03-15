@@ -67,6 +67,10 @@ export const useSocketStore = defineStore('socket', () => {
         socket.value?.on(event, callback)
     }
 
+    function off(event, callback) {
+        socket.value?.off(event)
+    }
+
     function emit(event, data) {
         socket.value?.emit(event, data)
     }
@@ -133,6 +137,7 @@ export const useSocketStore = defineStore('socket', () => {
         connect,
         disconnect,
         on,
+        off,
         emit,
         eventHandler,
         startIntervalPress: startEventInterval,
