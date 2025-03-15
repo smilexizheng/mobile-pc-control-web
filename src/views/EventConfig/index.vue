@@ -3,21 +3,13 @@ import {ref} from 'vue';
 import EventModal from "@/components/event/EventModal.vue";
 import {LocalEventStore} from "@/stores/localEventStore.js";
 import Modal from "@/components/ui/Modal.vue";
-import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
 
 
 const localEventStore = LocalEventStore()
 const eventModalOpen = ref(false)
 const editIndex = ref(null)
-const editEvent = ref({
-  name: '控制键鼠', color: '#44e5b8', events: [
-    {
-      event: CE.SYS_POINTER_MOVE,
-      eventData: {x: 0, y: 0},
-      delay: 0
-    }
-  ]
-})
+
+const editEvent = ref(null)
 
 const handleEdit = (index) => {
   editEvent.value = localEventStore.customEvents[index]
@@ -32,18 +24,18 @@ const handleDelete = (index) => {
 };
 
 const handleAdd = () => {
-  eventModalOpen.value=false;
-  if(editIndex.value!== null){
+  eventModalOpen.value = false;
+  if (editIndex.value !== null) {
     localEventStore.customEvents[editIndex.value] = editEvent.value
     editIndex.value = null
-  }else {
+  } else {
     localEventStore.customEvents.push(editEvent.value)
   }
 }
 </script>
 
 <template>
-  <button class="ios-button" @click="eventModalOpen = true">添加事件</button>
+  <button class="ios-button" @click="editEvent = localEventStore.defaultEvent(); eventModalOpen = true">添加事件</button>
   <Modal v-model="eventModalOpen" title="自定义操作">
     <EventModal :event="editEvent" :ok="handleAdd"/>
   </Modal>
