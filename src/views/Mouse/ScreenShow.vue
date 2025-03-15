@@ -2,6 +2,7 @@
 import {onMounted, ref} from 'vue';
 import {useSocketStore} from '@/stores/socket'
 import {useThrottleFn} from '@vueuse/core';
+import Message from "@/components/Message/UseMessage.js";
 
 const socketStore = useSocketStore();
 
@@ -27,6 +28,8 @@ const updateScreenImg =
     showScreenRef.value.height = img.height;
     ctx.clearRect(0, 0, img.width, img.height);
     ctx.drawImage(img, 0, 0);
+  }).catch((err) => {
+    Message.error(`图片加载失败${err}`)
   });
   // showScreenRef.value = URL.createObjectURL(blob);
 
