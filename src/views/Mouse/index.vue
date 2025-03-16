@@ -261,7 +261,7 @@ onUnmounted(() => {
       <img src="@/assets/icons/roller_down.svg" alt="下"
            @touchstart.passive="keyBoard.startIntervalPress({event:CE.SYS_SCROLL_VERTICAL,eventData:false})">
       <img src="@/assets/icons/backspace.svg" alt="删除"
-           @touchstart.passive="keyBoard.startIntervalPress({event:CE.KEYPRESS,eventData:{key:'backspace'}})">
+           @touchstart.passive="keyBoard.startIntervalPress({event:CE.KEYPRESS,eventData:{key:[Key.Backspace]}})">
     </div>
 
     <TextInput/>
