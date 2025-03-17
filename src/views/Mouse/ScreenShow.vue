@@ -6,12 +6,24 @@ import Message from "@/components/Message/UseMessage.js";
 
 const socketStore = useSocketStore();
 
-const props = defineProps(['isPaused'])
+const props = defineProps(['isPaused','showAirView'])
 
 
 const showScreenRef = ref(null);
 const screenMainStyle = ref({})
+
 let ctx;
+// 鸟瞰图
+const aerialStyle = ref({
+  bgWidth: 0,
+  bgHeight: 0,
+  boxWidth: 0,
+  boxHeight: 0,
+  boxLeft: 0,
+  boxTop: 0,
+})
+
+
 
 
 
@@ -42,6 +54,20 @@ const updateScreenImg =
     bottom: `${data.bottom}px`,
   }
 
+
+      // 451-["screen-data",{"left":0,"right":0,"top":67,"bottom":0,"screenWidth":2560,"screenHeight":1440,"x":1519,"y":0,"image":{"_placeholder":true,"num":0},"time":62,"width":410,"height":912}]
+  if(props.showAirView){
+    const ratio = data.screenWidth/data.width;
+    aerialStyle.value = {
+      bgHeight: data.screenHeight/ratio+'px',
+      boxWidth: data.width/ratio+'px',
+      boxHeight: data.height/ratio+'px',
+      boxLeft: data.x/ratio+'px',
+      boxTop: data.y/ratio+'px',
+    }
+  }
+
+
 }
 // , 16,true)
 
@@ -65,6 +91,11 @@ onUnmounted(() => {
 
 <template>
   <div class="screen-bg" :style='{width: screenMainStyle.width,height: screenMainStyle.height}'>
+    <!--鸟瞰图-->
+    <div class="aerial-view" v-show="props.showAirView">
+      <div class="aerial-view-bg" :style='{height: aerialStyle.bgHeight}'></div>
+      <div class="aerial-view-box" :style='{width: aerialStyle.boxWidth,height: aerialStyle.boxHeight,left: aerialStyle.boxLeft,top:aerialStyle.boxTop}'></div>
+    </div>
   <div class="screen-show"  :style="screenMainStyle">
     <canvas ref="showScreenRef"></canvas>
 <!--    <img alt="screen" :src="showScreenRef" class="screen-img"/>-->
@@ -83,6 +114,25 @@ onUnmounted(() => {
   overflow: hidden;
   border-radius: 10px;
 }
+
+.aerial-view{
+  position: absolute;
+  background-color: #af3636;
+  width: 100%;
+  z-index: 2;
+  .aerial-view-bg{
+    width: 100%;
+    position: absolute;
+    background-color: rgba(13, 229, 13, 0.1);
+    border-bottom: #34c759 1px solid;
+  }
+
+  .aerial-view-box{
+    position: absolute;
+    background-color: rgba(18, 218, 18, 0.3);
+  }
+}
+
 
 .screen-show {
   position: absolute;

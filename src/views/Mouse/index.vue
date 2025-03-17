@@ -40,6 +40,7 @@ const tapCount = ref(0)
 const [showScreen, toggleShowScreen] = useToggle(false)
 // 暂停更新屏幕
 const [pausedScreen, togglePausedScreen] = useToggle(false)
+const [showAirView, toggleAirView] = useToggle(false)
 
 const showQuickMenu = ref(false)
 
@@ -219,7 +220,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <ScreenShow :is-paused="pausedScreen" v-show="showScreen" />
+  <ScreenShow :is-paused="pausedScreen" :show-air-view="showAirView" v-show="showScreen" />
   <div class="touchpad-container">
     <!-- 触控板区域 -->
     <div
@@ -245,8 +246,8 @@ onUnmounted(() => {
     </div>
 
     <div class="right-side">
-
       <img src="@/assets/icons/quick_menu.svg" alt="快捷操作" @click="showQuickMenu=true">
+      <img src="@/assets/icons/air_view.svg" alt="预览位置" @click="toggleAirView()">
       <img :src=showScreen?on_screen:off_screen alt="显示屏幕" @click="toggleShowScreen()">
       <img src="@/assets/icons/roller_down.svg" alt="上" style="transform: rotate(180deg);"
            @touchstart.passive="keyBoard.startIntervalPress({event:CE.SYS_SCROLL_VERTICAL,eventData:true})">
