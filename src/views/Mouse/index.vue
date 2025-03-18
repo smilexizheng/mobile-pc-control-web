@@ -8,6 +8,8 @@ import {CLIENT_ON_EVENTS as CO} from "@/constant/client-on.js";
 import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
 import on_screen from "@/assets/icons/on_screen.svg"
 import off_screen from "@/assets/icons/off_screen.svg"
+import on_air_view from "@/assets/icons/on_air_view.svg"
+import off_air_view from "@/assets/icons/off_air_view.svg"
 import {useKeyBoardStore} from "@/stores/keyboardStore.js";
 import ScreenShow from "@/views/Mouse/ScreenShow.vue";
 import Modal from "@/components/ui/Modal.vue";
@@ -112,6 +114,7 @@ const sendCoordinates =
       socketStore.emit(CE.SYS_POINTER_MOVE, {
         x: moveDistancePos.value.x,
         y: moveDistancePos.value.y,
+        touchMove: true,
         timestamp: Date.now()
       })
     }
@@ -134,8 +137,8 @@ const handleEnd = () => {
       socketStore.emit(CE.SYS_MOUSE_CLICK, {button: 2, double: false})
     }
     // 单击/双击判断
-    else if (tapDuration < 200) {
-      if (currentTime - lastTapTime.value < 200) {
+    else if (tapDuration < 300) {
+      if (currentTime - lastTapTime.value < 300) {
         clearTimeout(tapTimeout.value)
         tapCount.value = 0
         // 双击
@@ -149,7 +152,7 @@ const handleEnd = () => {
             socketStore.emit(CE.SYS_MOUSE_CLICK, {button: 0, double: false})
           }
           tapCount.value = 0
-        }, 200)
+        }, 300)
       }
       lastTapTime.value = currentTime
     }
@@ -158,16 +161,16 @@ const handleEnd = () => {
   isMove.value = false
 
   moveDistancePos.value = {x: 0, y: 0}
-  socketStore.emit(CE.SYS_POINTER_END, null)
+  socketStore.emit(CE.SYS_POINTER_END)
 }
 
 
 const moveToTouchPos = () => {
-  if (showScreen.value) {
+  if (showScreen.value && !pausedScreen.value) {
     togglePausedScreen()
     socketStore.emit(CE.SYS_POINTER_MOVE, {
-      x: touchStartPos.value.x - padRef.value.offsetWidth / 2,
-      y: touchStartPos.value.y - padRef.value.offsetHeight / 2,
+      x: touchStartPos.value.x - padRef.value.offsetWidth / 2+mousePos.value.x,
+      y: touchStartPos.value.y - padRef.value.offsetHeight / 2+mousePos.value.y,
     })
     const oldPos = {x: mousePos.value.x, y: mousePos.value.y};
     setTimeout(() => {
@@ -178,7 +181,7 @@ const moveToTouchPos = () => {
       setTimeout(() => {
         togglePausedScreen()
       }, 100)
-    }, 250)
+    }, 500)
   }
 }
 
@@ -195,7 +198,10 @@ const statusText = computed(() => {
 // 生命周期
 onMounted(() => {
   socketStore.on(CO.SYS_POINTER_POS, (res) => {
-    mousePos.value = res
+    if(!pausedScreen.value){
+      mousePos.value = res
+    }
+
   });
 })
 
@@ -247,7 +253,7 @@ onUnmounted(() => {
 
     <div class="right-side">
       <img src="@/assets/icons/quick_menu.svg" alt="快捷操作" @click="showQuickMenu=true">
-      <img src="@/assets/icons/air_view.svg" alt="预览位置" @click="toggleAirView()">
+      <img :src=showAirView?on_air_view:off_air_view v-show="showScreen"  alt="预览位置" @click="toggleAirView()">
       <img :src=showScreen?on_screen:off_screen alt="显示屏幕" @click="toggleShowScreen()">
       <img src="@/assets/icons/roller_down.svg" alt="上" style="transform: rotate(180deg);"
            @touchstart.passive="keyBoard.startIntervalPress({event:CE.SYS_SCROLL_VERTICAL,eventData:true})">
@@ -316,8 +322,8 @@ onUnmounted(() => {
   gap: 0;
 
   & img {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
   }
 }
 

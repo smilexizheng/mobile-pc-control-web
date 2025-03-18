@@ -123,8 +123,8 @@ onUnmounted(() => {
   .aerial-view-bg{
     width: 100%;
     position: absolute;
-    background-color: rgba(13, 229, 13, 0.1);
-    border-bottom: #34c759 1px solid;
+    //background-color: rgba(13, 229, 13, 0.1);
+    border-bottom: #8ff3a7 1px solid;
   }
 
   .aerial-view-box{
