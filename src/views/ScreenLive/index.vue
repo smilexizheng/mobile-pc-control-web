@@ -10,45 +10,6 @@ const socketStore = useSocketStore()
 const videoPlayer = ref(null);
 let flvPlayer = null;
 
-
-// 创建自定义加载器函数
-function createSocketIOLoader(socket) {
-  return function (config) {
-    let isDestroyed = false;
-    const controller = new AbortController();
-
-    return {
-      abort: () => {
-        isDestroyed = true;
-        controller.abort();
-        socket.off('flv_data'); // 移除监听
-      },
-
-      open: async function (response) {
-        // 向服务器请求开始流传输
-        // socket.emit('start_stream');
-        // 监听二进制数据事件
-          socket.on('flv_data', (data) => {
-          if (isDestroyed) return;
-
-          // 将数据转换为Uint8Array
-          const uint8data = new Uint8Array(data);
-
-          // 将数据传递给flv.js解析器
-          // byteStart参数需要根据实际情况计算
-          response.onData(uint8data, 0);
-        });
-
-        // 错误处理
-        socket.on('error', (err) => {
-          response.onError(new Error('Socket error: ' + err));
-        });
-      }
-    };
-  };
-}
-
-
 onMounted(() => {
 
   // 初始化FLV播放器

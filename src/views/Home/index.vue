@@ -48,6 +48,7 @@ const apps = ref([
     categoryName: "应用", modules: [
       {name: "鼠标", color: "#4CAF50", action: "router", toLink: "/mouse"},
       {name: "桌面", color: "#4CAF50", action: "router", toLink: "/screen-live"},
+      {name: "窗口", color: "#4CAF50", action: "router", toLink: "/monitor-window"},
       {name: "事件配置", color: "#4CAF50", action: "router", toLink: "/event-config"},
       {name: "Postman", color: "#4CAF50", events:[ {event: CE.OPEN_APP, eventData: {name: "Postman"}}]},
     ]

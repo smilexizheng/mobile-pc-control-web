@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import EventConfig from '../views/EventConfig/index.vue'
 import Mouse from '../views/Mouse/index.vue'
 import ScreenLive from '../views/ScreenLive/index.vue'
+import MonitorWindow from '../views/MonitorWindow/index.vue'
 
 
 const router = createRouter({
@@ -18,17 +19,20 @@ const router = createRouter({
       name: 'mouse',
       component: Mouse
     },
-
     {
       path: '/screen-live',
-      name: 'screen-live',
+      name: 'screenLive',
       component:ScreenLive
     },
-
     {
       path: '/event-config',
-      name: 'event-config',
+      name: 'eventConfig',
       component: EventConfig,
+    },
+    {
+      path: '/monitor-window',
+      name: 'MonitorWindow',
+      component: MonitorWindow,
     },
   ]
 })

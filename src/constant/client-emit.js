@@ -30,4 +30,9 @@ export const CLIENT_EMIT_EVENTS = {
     SYS_POINTER_START: 'sys-pointer-start',
     SYS_POINTER_MOVE: 'sys-pointer-move',
     SYS_POINTER_END: 'sys-pointer-end',
+
+
+//
+    WINDOW_LIST:'window-list',
+    WINDOW_IMG:'window-img',
 };
