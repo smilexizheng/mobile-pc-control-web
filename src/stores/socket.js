@@ -38,19 +38,28 @@ export const useSocketStore = defineStore('socket', () => {
             socket.value = io(import.meta.env.VITE_SOCKET_URL, {
                 autoConnect: true,
                 path:"/win-control.io",
-                transports: ['websocket']
+                transports: ['websocket'],
+                auth: {
+                    token: 'ssss'
+                }
             })
 
             socket.value.on('connect', () => {
                 isConnected.value = true
             })
 
-            socket.value.on('disconnect', () => {
+            socket.value.on('disconnect', (reason) => {
+                Message.error(reason)
                 isConnected.value = false
             })
 
+            socket.value.on('error', (error) => {
+                Message.error(error)
+            })
+
+
+
             socket.value.on(CO.RESPONSE, (data) => {
-                // console.log("response>>" + JSON.stringify(data))
                 if (data.success) {
                     // todo 某些事件不需要提示
                     if(data.event.charAt(0)!== 's'){
