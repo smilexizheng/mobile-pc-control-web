@@ -57,6 +57,10 @@ export const useSocketStore = defineStore('socket', () => {
                 Message.error(error)
             })
 
+            socket.value.on("connect_error", (err) => {
+                Message.error(err.message)
+            });
+
 
 
             socket.value.on(CO.RESPONSE, (data) => {
