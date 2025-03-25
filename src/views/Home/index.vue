@@ -23,8 +23,8 @@ const apps = ref([
           {event: CE.SYS_MOUSE_CLICK, eventData: {button: 0, double: false},delay:20}
         ]},
       {name: "刷新", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.F5]}}]},
-      {name: "网页全屏", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: Key.F11}}]},
-      {name: "ESC", color: "#FF5722", events:[ {event: CE.KEYPRESS, eventData: {key: Key.Escape}}]},
+      {name: "网页全屏", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.F11]}}]},
+      {name: "ESC", color: "#FF5722", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.Escape]}}]},
       {name: "音乐上一首", color: "#4CAF50", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl,Key.LeftAlt,Key.Left]}}]},
       {name: "音乐下一首", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl,Key.LeftAlt,Key.Right]}}]},
       {name: "播放/暂停", color: "#FF5722", events:[ {event: CE.KEYPRESS, eventData: {key:  [Key.LeftControl,Key.LeftAlt,Key.F5]}}]},

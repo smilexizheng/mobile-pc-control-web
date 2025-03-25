@@ -253,8 +253,8 @@ onUnmounted(() => {
 
     <div class="right-side">
       <img src="@/assets/icons/quick_menu.svg" alt="快捷操作" @click="showQuickMenu=true">
-      <img :src=showAirView?on_air_view:off_air_view v-show="showScreen"  alt="预览位置" @click="toggleAirView()">
       <img :src=showScreen?on_screen:off_screen alt="显示屏幕" @click="toggleShowScreen()">
+      <img :src=showAirView?on_air_view:off_air_view v-show="showScreen"  alt="预览位置" @click="toggleAirView()">
       <img src="@/assets/icons/roller_down.svg" alt="上" style="transform: rotate(180deg);"
            @touchstart.passive="keyBoard.startIntervalPress({event:CE.SYS_SCROLL_VERTICAL,eventData:true})">
 
@@ -273,7 +273,7 @@ onUnmounted(() => {
 
     <TextInput/>
   </div>
-  <Modal v-model="showQuickMenu" title="快捷操作" :showHeader="false" :backgroundNone="true" max-height="60vh" >
+  <Modal v-model="showQuickMenu" title="快捷操作" :showHeader="true" :backgroundNone="showScreen" :showClose="true" max-height="60vh" >
     <QuickMenu />
   </Modal>
 

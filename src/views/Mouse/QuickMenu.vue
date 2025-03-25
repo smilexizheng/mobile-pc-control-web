@@ -20,13 +20,20 @@ const socketStore = useSocketStore()
 const apps = ref([
   {
     categoryName: "系统", modules: [
-      {name: "关机", color: "#FF5722", events:[ {event: CE.SYS_SHUTDOWN}]},
       {name: "回桌面", color: "#4CAF50", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftWin,Key.D] }}]},
       {name: "复制", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl, Key.C]}}]},
       {name: "粘贴", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl, Key.V]}}]},
       {name: "撤回", color: "#FF5722", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl, Key.Z]}}]}
     ],
     showSysVolume: true
+  },
+  {
+    categoryName: "放大镜", modules: [
+      {name: "开启", color: "#4CAF50", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftWin,Key.Add] }}]},
+      {name: "关闭", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftWin, Key.Escape]}}]},
+      {name: "放大", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftWin,Key.Add] }}]},
+      {name: "缩小", color: "#FF5722", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftWin,Key.Subtract] }}]}
+    ],
   }
 
 ]);
