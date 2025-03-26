@@ -93,7 +93,6 @@ const submitEvents = () => {
           <label class="input-label">输入文本</label>
           <div class="input-row">
             <input
-                type="number"
                 v-model="event.eventData.val"
                 placeholder="文本内容"
                 class="ios-input"
