@@ -17,20 +17,20 @@ const apps = ref([
   {
     categoryName: "快捷指令", modules: [
       {name: "腾讯视频", color: "#2196F3", events:[ {event: CE.OPEN_URL, eventData: {url: "https://v.qq.com/"}}]},
-      {name: "视频全屏", color: "#2196F3", events:[
-          {event: CE.SYS_POINTER_MOVE, eventData: {x: 1230, y: 850}},
-          {event: CE.SYS_POINTER_MOVE, eventData: {x: 1438, y: 966},delay:10},
-          {event: CE.SYS_MOUSE_CLICK, eventData: {button: 0, double: false},delay:20}
-        ]},
-      {name: "刷新", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.F5]}}]},
+      // {name: "视频全屏", color: "#2196F3", events:[
+      //     {event: CE.SYS_POINTER_MOVE, eventData: {x: 1230, y: 850}},
+      //     {event: CE.SYS_POINTER_MOVE, eventData: {x: 1438, y: 966},delay:10},
+      //     {event: CE.SYS_MOUSE_CLICK, eventData: {button: 0, double: false},delay:20}
+      //   ]},
+      // {name: "刷新", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.F5]}}]},
       {name: "网页全屏", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.F11]}}]},
       {name: "ESC", color: "#FF5722", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.Escape]}}]},
-      {name: "音乐上一首", color: "#4CAF50", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl,Key.LeftAlt,Key.Left]}}]},
-      {name: "音乐下一首", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl,Key.LeftAlt,Key.Right]}}]},
-      {name: "播放/暂停", color: "#FF5722", events:[ {event: CE.KEYPRESS, eventData: {key:  [Key.LeftControl,Key.LeftAlt,Key.F5]}}]},
+      // {name: "音乐上一首", color: "#4CAF50", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl,Key.LeftAlt,Key.Left]}}]},
+      // {name: "音乐下一首", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl,Key.LeftAlt,Key.Right]}}]},
+      {name: "播放/暂停", color: "#FF5722", events:[ {event: CE.KEYPRESS, eventData: {key:  [Key.Space]}}]},
       // {name: "+音量", color: "#4CAF50", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl,Key.LeftAlt,Key.Up]}}]},
       // {name: "-音量", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key:[Key.LeftControl,Key.LeftAlt,Key.Down]}}]},
-      {name: "歌词显隐", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl,Key.LeftAlt,Key.W]}}]},
+      // {name: "歌词显隐", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl,Key.LeftAlt,Key.W]}}]},
       {name: "B站", color: "#4CAF50", events:[ {event: CE.OPEN_URL, eventData: {url: "https://www.bilibili.com/"}}]},
     ]
   },
@@ -50,7 +50,6 @@ const apps = ref([
       {name: "桌面", color: "#4CAF50", action: "router", toLink: "/screen-live"},
       {name: "窗口", color: "#4CAF50", action: "router", toLink: "/monitor-window"},
       {name: "事件配置", color: "#4CAF50", action: "router", toLink: "/event-config"},
-      {name: "Postman", color: "#4CAF50", events:[ {event: CE.OPEN_APP, eventData: {name: "Postman"}}]},
     ]
   },
 
@@ -99,7 +98,7 @@ const handleTouchEnd = (e) => {
 
 
     <div class="app-area">
-      <div class="area-title">自定义事件</div>
+      <div class="area-title">我的</div>
       <div class="app-grid">
         <div
             v-for="(module, index) in localEventStore.customEvents"

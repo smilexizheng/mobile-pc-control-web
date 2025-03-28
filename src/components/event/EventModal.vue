@@ -1,10 +1,6 @@
 <script setup>
 import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
-import {Key} from "../../enums/key.enum.js";
-import Modal from "@/components/ui/Modal.vue";
 import ShortcutPicker from "@/components/event/ShortcutPicker.vue";
-import { ref } from 'vue'
-const showShortcutPicker = ref(false)
 
 
 const props = defineProps({
@@ -78,6 +74,8 @@ const submitEvents = () => {
             <option :value="CE.SYS_MOUSE_CLICK">鼠标点击</option>
             <option :value="CE.KEYPRESS">快捷键</option>
             <option :value="CE.TYPING">输入文本</option>
+            <option :value="CE.OPEN_URL">打开网址</option>
+            <option :value="CE.OPEN_APP">打开应用</option>
           </select>
         </div>
 
@@ -107,6 +105,20 @@ const submitEvents = () => {
               > 自动回车
             </label>
           </div>
+        </div>
+
+        <div v-if="event.event === CE.OPEN_URL" class="form-group">
+          <label class="input-label">输入网址</label>
+          <div class="input-row">
+            <input
+                v-model="event.eventData.url"
+                placeholder="文本内容"
+                class="ios-input"
+            >
+          </div>
+        </div>
+        <div v-if="event.event === CE.OPEN_APP" class="form-group">
+          暂不支持打开应用
         </div>
 
         <div v-if="event.event === CE.SYS_POINTER_MOVE" class="form-group">
