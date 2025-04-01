@@ -47,9 +47,10 @@ const apps = ref([
   {
     categoryName: "应用", modules: [
       {name: "鼠标", color: "#4CAF50", action: "router", toLink: "/mouse"},
-      {name: "桌面", color: "#4CAF50", action: "router", toLink: "/screen-live"},
-      {name: "窗口", color: "#4CAF50", action: "router", toLink: "/monitor-window"},
+      {name: "文件共享", color: "#f81010", action: "router", toLink: "/transfer"},
+      {name: "窗口", color: "#5968f8", action: "router", toLink: "/monitor-window"},
       {name: "事件配置", color: "#4CAF50", action: "router", toLink: "/event-config"},
+      {name: "桌面", color: "#fd9b1b", action: "router", toLink: "/screen-live"},
     ]
   },
 

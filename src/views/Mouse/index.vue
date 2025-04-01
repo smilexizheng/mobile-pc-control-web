@@ -4,7 +4,6 @@ import {useSocketStore} from '@/stores/socket'
 import TextInput from "@/views/Mouse/TextInput.vue";
 import {useTitle, useToggle, useResizeObserver} from "@vueuse/core";
 import {posThreshold} from "@/utils/common.js";
-import {CLIENT_ON_EVENTS as CO} from "@/constant/client-on.js";
 import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
 import on_screen from "@/assets/icons/on_screen.svg"
 import off_screen from "@/assets/icons/off_screen.svg"
@@ -197,7 +196,7 @@ const statusText = computed(() => {
 
 // 生命周期
 onMounted(() => {
-  socketStore.on(CO.SYS_POINTER_POS, (res) => {
+  socketStore.on(CE.SYS_POINTER_POS, (res) => {
     if(!pausedScreen.value){
       mousePos.value = res
     }
@@ -219,7 +218,7 @@ watch(showScreen, (newVal) => {
 
 onUnmounted(() => {
   showScreen.value = false
-  socketStore.off(CO.SYS_POINTER_POS)
+  socketStore.off(CE.SYS_POINTER_POS)
 })
 
 

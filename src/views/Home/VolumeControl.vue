@@ -2,7 +2,6 @@
 import {onMounted, ref} from "vue";
 import {useSocketStore} from '@/stores/socket'
 import {useDebounceFn, useThrottleFn} from "@vueuse/core";
-import {CLIENT_ON_EVENTS as CO} from "@/constant/client-on.js";
 import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
 const socketStore = useSocketStore()
 
@@ -11,7 +10,7 @@ const volume = ref(0);
 const isMuted = ref(false);
 onMounted(() => {
   socketStore.emit(CE.SYS_GET_VOLUME,null)
-  socketStore.on(CO.SYS_VOLUME,useDebounceFn( (res) => {
+  socketStore.on(CE.SYS_VOLUME,useDebounceFn( (res) => {
     volume.value = res.data.volume/100;
     isMuted.value = res.data.mute
   }),500)

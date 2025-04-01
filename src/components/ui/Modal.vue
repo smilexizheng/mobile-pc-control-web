@@ -120,6 +120,4 @@ const handleClose = () => {
   /*padding-top: 12px;*/
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
 }
-
-/* 其他原有样式保持不变... */
 </style>

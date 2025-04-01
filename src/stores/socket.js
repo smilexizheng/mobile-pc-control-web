@@ -1,7 +1,6 @@
 import {defineStore} from 'pinia'
 import {io} from 'socket.io-client'
 import {ref} from "vue";
-import {CLIENT_ON_EVENTS as CO} from "@/constant/client-on.js";
 import {useIntervalFn} from "@vueuse/core";
 import router from "@/router/index.js";
 import {useDebounceFn} from '@vueuse/core'
@@ -49,6 +48,7 @@ export const useSocketStore = defineStore('socket', () => {
             })
 
             socket.value.on('disconnect', (reason) => {
+                console.log(reason)
                 Message.error(reason)
                 isConnected.value = false
             })
@@ -58,12 +58,13 @@ export const useSocketStore = defineStore('socket', () => {
             })
 
             socket.value.on("connect_error", (err) => {
+                console.error(err)
                 Message.error(err.message)
             });
 
 
 
-            socket.value.on(CO.RESPONSE, (data) => {
+            socket.value.on(CE.RESPONSE, (data) => {
                 if (data.success) {
                     // todo 某些事件不需要提示
                     if(data.event.charAt(0)!== 's'){
@@ -86,6 +87,9 @@ export const useSocketStore = defineStore('socket', () => {
 
     function emit(event, data) {
         socket.value?.emit(event, data)
+    }
+    function once(event, data) {
+        socket.value?.once(event, data)
     }
 
 
@@ -152,6 +156,7 @@ export const useSocketStore = defineStore('socket', () => {
         on,
         off,
         emit,
+        once,
         eventHandler,
         startIntervalPress: startEventInterval,
         clearKeyEvent: stopEventInterval,

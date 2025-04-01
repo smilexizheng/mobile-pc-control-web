@@ -3,6 +3,7 @@ import EventConfig from '../views/EventConfig/index.vue'
 import Mouse from '../views/Mouse/index.vue'
 import ScreenLive from '../views/ScreenLive/index.vue'
 import MonitorWindow from '../views/MonitorWindow/index.vue'
+import Transfer from '../views/Transfer/index.vue'
 
 
 const router = createRouter({
@@ -33,6 +34,11 @@ const router = createRouter({
       path: '/monitor-window',
       name: 'MonitorWindow',
       component: MonitorWindow,
+    },
+    {
+      path: '/transfer',
+      name: 'transfer',
+      component: Transfer,
     },
   ]
 })

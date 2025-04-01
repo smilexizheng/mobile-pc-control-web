@@ -1,4 +1,7 @@
 export const CLIENT_EMIT_EVENTS = {
+    // 系统响应
+    RESPONSE: 'response',
+
     // 加入房间
     JOIN_ROOM: 'join-room',
     LEAVE_ROOM: 'leave_room',
@@ -18,21 +21,30 @@ export const CLIENT_EMIT_EVENTS = {
     SYS_SHUTDOWN: 'sys-shutdown',
     SYS_SET_VOLUME: 'sys-set-volume',
     SYS_GET_VOLUME: 'sys-get-volume',
+    SYS_VOLUME: 'sys-volume',
     SYS_TOGGLE_MUTE: 'sys-toggle-mute',
 
     // 鼠标控制
     SYS_MOUSE_CLICK: 'sys-mouse-click',
     SYS_MOUSE_TOGGLE: 'sys-mouse-toggle',
-    SYS_SCROLL_HORIZONTAL:'sys_scroll_horizontal',
-    SYS_SCROLL_VERTICAL:'sys_scroll_vertical',
+    SYS_SCROLL_HORIZONTAL: 'sys_scroll_horizontal',
+    SYS_SCROLL_VERTICAL: 'sys_scroll_vertical',
+    SYS_POINTER_POS: 'sys-pointer-pos',
 
     // 指针控制
     SYS_POINTER_START: 'sys-pointer-start',
     SYS_POINTER_MOVE: 'sys-pointer-move',
     SYS_POINTER_END: 'sys-pointer-end',
 
+    // 窗口列表
+    WINDOW_LIST: 'window-list',
+    WINDOW_IMG: 'window-img',
 
-//
-    WINDOW_LIST:'window-list',
-    WINDOW_IMG:'window-img',
+// 文件传输
+    FILE_START: 'file-start',
+    FIlE_ACK: 'file-ack',
+    FIlE_CHUNK: 'file-chunk',
+    FIlE_END: 'file-end',
+    FIlE_COMPLETE: 'file-complete',
+    FIlE_PROGRESS: 'file-progress'
 };
