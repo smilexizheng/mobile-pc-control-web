@@ -20,19 +20,19 @@ const socketStore = useSocketStore()
 const apps = ref([
   {
     categoryName: "系统", modules: [
-      {name: "回桌面", color: "#4CAF50", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftWin,Key.D] }}]},
-      {name: "复制", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl, Key.C]}}]},
-      {name: "粘贴", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl, Key.V]}}]},
-      {name: "撤回", color: "#FF5722", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftControl, Key.Z]}}]}
+      {name: "回桌面", color: "#4CAF50", events: [{event: CE.KEYPRESS, eventData: {key: [Key.LeftWin, Key.D]}}]},
+      {name: "复制", color: "#2196F3", events: [{event: CE.KEYPRESS, eventData: {key: [Key.LeftControl, Key.C]}}]},
+      {name: "粘贴", color: "#2196F3", events: [{event: CE.KEYPRESS, eventData: {key: [Key.LeftControl, Key.V]}}]},
+      {name: "撤回", color: "#FF5722", events: [{event: CE.KEYPRESS, eventData: {key: [Key.LeftControl, Key.Z]}}]}
     ],
     showSysVolume: true
   },
   {
     categoryName: "放大镜", modules: [
-      {name: "开启", color: "#4CAF50", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftWin,Key.Add] }}]},
-      {name: "关闭", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftWin, Key.Escape]}}]},
-      {name: "放大", color: "#2196F3", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftWin,Key.Add] }}]},
-      {name: "缩小", color: "#FF5722", events:[ {event: CE.KEYPRESS, eventData: {key: [Key.LeftWin,Key.Subtract] }}]}
+      {name: "开启", color: "#4CAF50", events: [{event: CE.KEYPRESS, eventData: {key: [Key.LeftWin, Key.Add]}}]},
+      {name: "关闭", color: "#2196F3", events: [{event: CE.KEYPRESS, eventData: {key: [Key.LeftWin, Key.Escape]}}]},
+      {name: "放大", color: "#2196F3", events: [{event: CE.KEYPRESS, eventData: {key: [Key.LeftWin, Key.Add]}}]},
+      {name: "缩小", color: "#FF5722", events: [{event: CE.KEYPRESS, eventData: {key: [Key.LeftWin, Key.Subtract]}}]}
     ],
   }
 
@@ -48,65 +48,51 @@ const handleTouchEnd = (e) => {
 };
 
 
-
 </script>
 
 <template>
-  <div class="ios-home-screen" v-if="socketStore.isConnected">
-
-    <div class="app-area" v-for="(m,index) in apps" :key="'a'+index">
+  <div class="home-screen">
+    <div class="app-area" v-for="(m) in apps">
       <div class="area-title">{{ m.categoryName }}</div>
-      <div class="app-grid">
-        <div
-            v-for="(module, index) in m.modules"
-            :key="index"
-            class="app-icon"
-            @touchstart="handleTouchStart"
-            @touchend="handleTouchEnd"
-            @click="socketStore.eventHandler(module)"
+      <nut-grid :column-num="5" :border="false">
+        <nut-grid-item :text="module.name" v-for="(module) in m.modules"
+                       @touchstart="handleTouchStart"
+                       @touchend="handleTouchEnd"
+                       @click="socketStore.eventHandler(module)"
         >
-
-          <div
-              class="dingtalk-icon"
+          <nut-row
+              class="text-icon"
               :style="{ backgroundColor: module.color }"
           >
             {{ module.name }}
-          </div>
-        </div>
-      </div>
+          </nut-row>
+        </nut-grid-item>
+      </nut-grid>
       <VolumeControl v-if="m.showSysVolume"/>
     </div>
 
-
     <div class="app-area">
-      <div class="area-title">自定义功能</div>
-      <div class="app-grid">
-        <div
-            v-for="(module, index) in localEventStore.customEvents"
-            :key="index"
-            class="app-icon"
-            @touchstart="handleTouchStart"
-            @touchend="handleTouchEnd"
-            @click="socketStore.eventHandler(module)"
+      <div class="area-title">我的</div>
+      <nut-grid :column-num="5" :border="false">
+        <nut-grid-item :text="module.name" v-for="(module) in localEventStore.customEvents"
+                       @touchstart="handleTouchStart"
+                       @touchend="handleTouchEnd"
+                       @click="socketStore.eventHandler(module)"
         >
-
-          <div
-              class="dingtalk-icon"
+          <nut-row
+              class="text-icon"
               :style="{ backgroundColor: module.color }"
           >
             {{ module.name }}
-          </div>
-
-        </div>
-      </div>
+          </nut-row>
+        </nut-grid-item>
+      </nut-grid>
     </div>
-
   </div>
-  <div v-else>加载中...</div>
 </template>
 
 <style scoped>
-.ios-home-screen {
+.home-screen {
   user-select: none;
   overflow: auto;
   /* 移除点击高亮 */
@@ -146,7 +132,7 @@ const handleTouchEnd = (e) => {
   cursor: pointer;
 }
 
-.dingtalk-icon {
+.text-icon {
   width: 54px;
   height: 54px;
   border-radius: 10px;
@@ -162,7 +148,7 @@ const handleTouchEnd = (e) => {
   box-shadow 0.2s;
 }
 
-.app-icon:active .dingtalk-icon {
+.app-icon:active .text-icon {
   transform: scale(0.92);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }

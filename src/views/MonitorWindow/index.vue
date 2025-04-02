@@ -29,16 +29,14 @@ onUnmounted(() => {
   socketStore.off(CE.WINDOW_IMG)
 })
 
-
 </script>
 
 <!-- 前端部分 (Vue3组件) -->
 <template>
-  <div v-for="item in appWindow" :key="item.id" v-show="!item.isMinimized"
-       @click="!item.isMinimized &&socketStore.emit(CE.WINDOW_IMG,item.id)">
-    {{ item.title }}
-  </div>
-  <Modal v-model="showModal" title="查看窗口" max-height="60vh">
+  <nut-cell v-for="item in appWindow" :key="item.id" v-show="!item.isMinimized && item.title"
+            @click="!item.isMinimized &&socketStore.emit(CE.WINDOW_IMG,item.id)"
+            :title="item.title" desc="点击查看截图"></nut-cell>
+  <Modal v-model="showModal" title="窗口截屏" max-height="60vh">
     <img :src="windowImgUrl" alt="预览图片" style="width: 100%;">
   </Modal>
 </template>

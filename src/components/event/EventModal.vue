@@ -1,16 +1,16 @@
 <script setup>
 import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
 import ShortcutPicker from "@/components/event/ShortcutPicker.vue";
-
+import {showDialog} from '@nutui/nutui'
 
 const props = defineProps({
   event: {
     type: Object,
     required: true,
   },
-  ok:{
-    type:Function,
-    required:true,
+  ok: {
+    type: Function,
+    required: true,
   }
 })
 
@@ -62,10 +62,19 @@ const submitEvents = () => {
       </div>
     </div>
 
+    <nut-sticky top="80">
+      <button class="ios-button secondary" @click="addEvent">
+        新增事件
+      </button>
+      <button class="ios-button primary" @click="submitEvents">
+        完成配置（共{{ event.events.length }}项）
+      </button>
+    </nut-sticky>
+
     <div class="event-list">
       <div v-for="(event, index) in event.events" :key="index" class="event-item">
         <div class="form-group">
-          <label class="input-label">事件类型</label>
+          <label class="input-label">[{{ index + 1 }}]事件类型</label>
           <select
               v-model="event.event"
               class="ios-select"
@@ -82,7 +91,7 @@ const submitEvents = () => {
         <div v-if="event.event === CE.KEYPRESS" class="form-group">
           <label class="input-label">快捷键</label>
           <div class="input-row">
-              <ShortcutPicker v-model="event.eventData.key" />
+            <ShortcutPicker v-model="event.eventData.key"/>
           </div>
         </div>
 
@@ -175,22 +184,20 @@ const submitEvents = () => {
 
         <button
             class="ios-button danger"
-            @click="removeEvent(index)"
+            @click="showDialog({
+    title: '温馨提示',
+    content: '确认移除该事件吗？',
+    onOk: () => {
+      removeEvent(index)
+    }
+  })"
         >
           删除事件
         </button>
       </div>
     </div>
 
-
   </div>
-
-  <button class="ios-button secondary" @click="addEvent">
-    新增事件
-  </button>
-  <button class="ios-button primary" @click="submitEvents">
-    完成配置（共{{ event.events.length }}项）
-  </button>
 
 
 </template>

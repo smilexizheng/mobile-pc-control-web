@@ -1,8 +1,8 @@
 <script setup>
-import {computed, onMounted, ref, watch,onUnmounted} from 'vue'
+import {computed, onMounted, ref, watch, onUnmounted} from 'vue'
 import {useSocketStore} from '@/stores/socket'
 import TextInput from "@/views/Mouse/TextInput.vue";
-import {useTitle, useToggle, useResizeObserver} from "@vueuse/core";
+import {useToggle, useResizeObserver} from "@vueuse/core";
 import {posThreshold} from "@/utils/common.js";
 import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
 import on_screen from "@/assets/icons/on_screen.svg"
@@ -17,7 +17,8 @@ import {Key} from "@/enums/key.enum.js";
 
 const socketStore = useSocketStore()
 const keyBoard = useKeyBoardStore()
-useTitle('PControl')
+const leftNavVisible = ref(false)
+const rightNavVisible = ref(false)
 // 响应式状态
 const padRef = ref(null)
 // 起点
@@ -46,7 +47,6 @@ const [showAirView, toggleAirView] = useToggle(false)
 const showQuickMenu = ref(false)
 
 
-
 const connectionStatus = ref('disconnected') // disconnected/connecting/connected/error
 
 
@@ -64,6 +64,8 @@ useResizeObserver(padRef, (entries) => {
 
 // 触摸事件处理
 const handleStart = (e) => {
+  leftNavVisible.value = false
+  rightNavVisible.value = false
   // e.preventDefault()
   const touch = e.touches[0]
   touchStartPos.value = {
@@ -88,8 +90,8 @@ const handleMove = (e) => {
   const deltaX = showScreen.value && !leftDown.value ? touchStartPos.value.x - touch.clientX : touch.clientX - touchStartPos.value.x
   const deltaY = showScreen.value && !leftDown.value ? touchStartPos.value.y - touch.clientY : touch.clientY - touchStartPos.value.y
 
-  moveDistancePos.value.x = leftDown.value ? deltaX*2.5: deltaX * 3
-  moveDistancePos.value.y = leftDown.value ? deltaY*1.5: deltaY * 2
+  moveDistancePos.value.x = leftDown.value ? deltaX * 2.5 : deltaX * 3
+  moveDistancePos.value.y = leftDown.value ? deltaY * 1.5 : deltaY * 2
 
   sendCoordinates()
 }
@@ -168,8 +170,8 @@ const moveToTouchPos = () => {
   if (showScreen.value && !pausedScreen.value) {
     togglePausedScreen()
     socketStore.emit(CE.SYS_POINTER_MOVE, {
-      x: touchStartPos.value.x - padRef.value.offsetWidth / 2+mousePos.value.x,
-      y: touchStartPos.value.y - padRef.value.offsetHeight / 2+mousePos.value.y,
+      x: touchStartPos.value.x - padRef.value.offsetWidth / 2 + mousePos.value.x,
+      y: touchStartPos.value.y - padRef.value.offsetHeight / 2 + mousePos.value.y,
     })
     const oldPos = {x: mousePos.value.x, y: mousePos.value.y};
     setTimeout(() => {
@@ -197,7 +199,7 @@ const statusText = computed(() => {
 // 生命周期
 onMounted(() => {
   socketStore.on(CE.SYS_POINTER_POS, (res) => {
-    if(!pausedScreen.value){
+    if (!pausedScreen.value) {
       mousePos.value = res
     }
 
@@ -225,7 +227,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <ScreenShow :is-paused="pausedScreen" :show-air-view="showAirView" v-show="showScreen" />
+  <ScreenShow :is-paused="pausedScreen" :show-air-view="showAirView" v-show="showScreen"/>
   <div class="touchpad-container">
     <!-- 触控板区域 -->
     <div
@@ -240,46 +242,91 @@ onUnmounted(() => {
       {{ mousePos.x }},{{ mousePos.y }}
     </div>
 
-    <!-- 连接状态 -->
+
     <div class="status" style="left:10px;top:20px;" @click="$router.push('/')">
       返回
     </div>
+    <!--连接状态-->
+    <!--    <div class="status" style="right:10px;top:20px;">-->
+    <!--      <span :class="['indicator', connectionStatus]"></span>-->
+    <!--      {{ statusText }}-->
+    <!--    </div>-->
 
-    <div class="status" style="right:10px;top:20px;">
-      <span :class="['indicator', connectionStatus]"></span>
-      {{ statusText }}
-    </div>
+    <nut-drag direction="y" :style="{ left: '0px', bottom: '80px' }">
+      <nut-fixed-nav v-model:visible="leftNavVisible" type="left" un-active-text="控滚动条" active-text="收起功能"
+                     :overlay="false">
+        <template #list>
+          <ul class="nut-fixed-nav__list">
+            <li class="nut-fixed-nav__list-item"
+                @touchstart.passive="keyBoard.startIntervalPress({event:CE.SYS_SCROLL_VERTICAL,eventData:true})">
+              <img src="@/assets/icons/roller_down.svg" alt="上"
+                   style="transform: rotate(180deg);">
+              <span class="span">向上</span>
+            </li>
+            <li class="nut-fixed-nav__list-item"
+                @touchstart.passive="keyBoard.startIntervalPress({event:CE.SYS_SCROLL_VERTICAL,eventData:false})">
+              <img src="@/assets/icons/roller_down.svg" alt="下">
+              <span class="span">向下</span>
+            </li>
+            <li class="nut-fixed-nav__list-item"
+                @touchstart.passive="keyBoard.startIntervalPress({event:CE.SYS_SCROLL_HORIZONTAL,eventData:false})">
+              <img src="@/assets/icons/roller_down.svg" alt="左"
+                   style="transform: rotate(90deg);">
+              <span class="span">向左</span>
+            </li>
+            <li class="nut-fixed-nav__list-item"
+                @touchstart.passive="keyBoard.startIntervalPress({event:CE.SYS_SCROLL_HORIZONTAL,eventData:true})">
+              <img src="@/assets/icons/roller_down.svg" alt="右"
+                   style="transform: rotate(270deg);">
+              <span class="span">向右</span>
+            </li>
+          </ul>
+        </template>
+      </nut-fixed-nav>
+    </nut-drag>
 
-    <div class="right-side">
-      <img src="@/assets/icons/quick_menu.svg" alt="快捷操作" @click="showQuickMenu=true">
-      <img :src=showScreen?on_screen:off_screen alt="显示屏幕" @click="toggleShowScreen()">
-      <img :src=showAirView?on_air_view:off_air_view v-show="showScreen"  alt="预览位置" @click="toggleAirView()">
-      <img src="@/assets/icons/roller_down.svg" alt="上" style="transform: rotate(180deg);"
-           @touchstart.passive="keyBoard.startIntervalPress({event:CE.SYS_SCROLL_VERTICAL,eventData:true})">
+    <nut-drag direction="y" :style="{ right: '0px', bottom: '120px' }">
+      <nut-fixed-nav v-model:visible="rightNavVisible" un-active-text="快捷功能" active-text="收起功能"
+                     :overlay="false">
+        <template #list>
+          <ul class="nut-fixed-nav__list">
+            <li class="nut-fixed-nav__list-item" @click="showQuickMenu=true">
+              <img src="@/assets/icons/quick_menu.svg" alt="快捷操作">
+              <span class="span">快捷功能</span>
+            </li>
+            <li class="nut-fixed-nav__list-item" @click="toggleShowScreen()">
+              <img :src=showScreen?on_screen:off_screen alt="显示屏幕">
+              <span class="span">{{ showScreen ? '隐藏屏幕' : '显示屏幕' }}</span>
+            </li>
+            <li v-show="showScreen" class="nut-fixed-nav__list-item" @click="toggleAirView()">
+              <img :src=showAirView?on_air_view:off_air_view
+                   alt="预览位置">
+              <span class="span">{{ showAirView ? '隐藏轮廓' : '显示轮廓' }}</span>
+            </li>
+            <li class="nut-fixed-nav__list-item"
+                @touchstart.passive="keyBoard.startIntervalPress({event:CE.KEYPRESS,eventData:{key:[Key.Backspace]}})">
+              <img src="@/assets/icons/backspace.svg" alt="删除">
+              <span class="span">删除</span>
+            </li>
+          </ul>
+        </template>
+      </nut-fixed-nav>
+    </nut-drag>
 
-
-      <div style="height: 40px">
-        <img src="@/assets/icons/roller_down.svg" alt="左" style="transform: rotate(90deg);"
-             @touchstart.passive="keyBoard.startIntervalPress({event:CE.SYS_SCROLL_HORIZONTAL,eventData:false})">
-        <img src="@/assets/icons/roller_down.svg" alt="右" style="transform: rotate(270deg);"
-             @touchstart.passive="keyBoard.startIntervalPress({event:CE.SYS_SCROLL_HORIZONTAL,eventData:true})">
-      </div>
-      <img src="@/assets/icons/roller_down.svg" alt="下"
-           @touchstart.passive="keyBoard.startIntervalPress({event:CE.SYS_SCROLL_VERTICAL,eventData:false})">
-      <img src="@/assets/icons/backspace.svg" alt="删除"
-           @touchstart.passive="keyBoard.startIntervalPress({event:CE.KEYPRESS,eventData:{key:[Key.Backspace]}})">
-    </div>
 
     <TextInput/>
   </div>
-  <Modal v-model="showQuickMenu" title="快捷操作" :showHeader="true" :backgroundNone="showScreen" :showClose="true" max-height="60vh" >
-    <QuickMenu />
+  <Modal v-model="showQuickMenu" title="快捷功能" :showHeader="true" :showClose="true"
+         max-height="60vh">
+    <QuickMenu/>
   </Modal>
 
 </template>
 
 
 <style scoped lang="less">
+
+
 .touchpad-container {
   z-index: 9;
   width: 100%;

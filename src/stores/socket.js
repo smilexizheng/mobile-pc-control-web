@@ -5,7 +5,7 @@ import {useIntervalFn} from "@vueuse/core";
 import router from "@/router/index.js";
 import {useDebounceFn} from '@vueuse/core'
 import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
-import Message from '@/components/Message/useMessage'
+import {showNotify,showToast  } from '@nutui/nutui'
 
 /**
  *  持续触发 任意socket某个事件
@@ -36,7 +36,7 @@ export const useSocketStore = defineStore('socket', () => {
         if (!socket.value) {
             socket.value = io(import.meta.env.VITE_SOCKET_URL, {
                 autoConnect: true,
-                path:"/win-control.io",
+                path: "/win-control.io",
                 transports: ['websocket'],
                 auth: {
                     token: 'ssss'
@@ -49,29 +49,28 @@ export const useSocketStore = defineStore('socket', () => {
 
             socket.value.on('disconnect', (reason) => {
                 console.log(reason)
-                Message.error(reason)
+                showNotify.warn(reason)
                 isConnected.value = false
             })
 
             socket.value.on('error', (error) => {
-                Message.error(error)
+                showNotify.warn(error)
             })
 
             socket.value.on("connect_error", (err) => {
                 console.error(err)
-                Message.error(err.message)
+                showNotify.warn(err.message)
             });
-
 
 
             socket.value.on(CE.RESPONSE, (data) => {
                 if (data.success) {
                     // todo 某些事件不需要提示
-                    if(data.event.charAt(0)!== 's'){
-                        Message.success(data.msg ||data.event+'操作成功')
+                    if (data.event.charAt(0) !== 's') {
+                        showToast.text(data.msg || data.event + '操作成功')
                     }
-                }else {
-                    Message.error(data.msg ||data.event+'操作失败')
+                } else {
+                    showNotify.warn(data.msg || data.event + '操作失败')
                 }
             })
         }
@@ -88,6 +87,7 @@ export const useSocketStore = defineStore('socket', () => {
     function emit(event, data) {
         socket.value?.emit(event, data)
     }
+
     function once(event, data) {
         socket.value?.once(event, data)
     }

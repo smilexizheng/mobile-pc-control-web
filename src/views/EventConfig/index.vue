@@ -3,6 +3,7 @@ import {ref} from 'vue';
 import EventModal from "@/components/event/EventModal.vue";
 import {LocalEventStore} from "@/stores/localEventStore.js";
 import Modal from "@/components/ui/Modal.vue";
+import {showDialog} from '@nutui/nutui'
 
 
 const localEventStore = LocalEventStore()
@@ -18,9 +19,14 @@ const handleEdit = (index) => {
 };
 
 const handleDelete = (index) => {
-  if (confirm('确定要删除这个项目吗？')) {
-    localEventStore.customEvents.splice(index, 1)
-  }
+  showDialog({
+    title: '温馨提示',
+    content: '确定要删除这个项目吗？',
+    onOk: () => {
+      localEventStore.customEvents.splice(index, 1)
+    }
+  })
+
 };
 
 const handleAdd = () => {
@@ -35,8 +41,7 @@ const handleAdd = () => {
 </script>
 
 <template>
-  <button class="ios-button" @click="editEvent = localEventStore.defaultEvent(); eventModalOpen = true">添加事件</button>
-  <Modal v-model="eventModalOpen" title="自定义操作">
+  <Modal v-model="eventModalOpen" title="自定义功能">
     <EventModal :event="editEvent" :ok="handleAdd"/>
   </Modal>
   <div class="mobile-list">
@@ -58,6 +63,9 @@ const handleAdd = () => {
       </div>
     </div>
   </div>
+  <nut-sticky position="bottom">
+    <nut-button block type="primary" @click="editEvent = localEventStore.defaultEvent(); eventModalOpen = true">添加自动化</nut-button>
+  </nut-sticky>
 </template>
 
 

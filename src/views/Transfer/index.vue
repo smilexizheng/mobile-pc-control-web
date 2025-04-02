@@ -2,8 +2,9 @@
 import {ref, onMounted} from 'vue';
 import {useSocketStore} from "@/stores/socket.js";
 import {generateUUID} from "@/utils/common.js";
-import Message from "@/components/Message/UseMessage.js";
 import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
+import {showToast, showNotify} from '@nutui/nutui'
+import {Uploader} from '@nutui/icons-vue'
 
 const socket = useSocketStore()
 
@@ -30,27 +31,26 @@ onMounted(() => {
   // 传输完成
   socket.on(CE.FIlE_COMPLETE, (fileId) => {
     // const target = uploadFiles.value[fileId];
-    Message.success('上传成功');
+    showToast.text('上传完成')
   });
 })
 
 const handleFileSelect = async (files) => {
-  if (Array.isArray(files) && files.length) {
-    //多选
-    for (const file of files) {
-      await handleUpload(file);
+  if (files.length > 0) {
+    for (let i = 0; i < files.length; i++) {
+      handleUpload(files[i]);
     }
-  } else { //单选
-    await handleUpload(files);
   }
+  return files;
 };
 
-const handleUpload = async (file) => {
+const handleUpload = (file) => {
+  if (overSize(file)) return;
   const fileData = {
     id: generateUUID(),
-    name: file.file.name,
-    size: file.file.size,
-    file: file.file,
+    name: file.name,
+    size: file.size,
+    file: file,
     progress: 0
   };
 
@@ -59,18 +59,18 @@ const handleUpload = async (file) => {
   // 开始传输
   socket.emit(CE.FILE_START, {
     fileId: fileData.id,
-    fileName: file.file.name,
-    fileSize: file.file.size
+    fileName: file.name,
+    fileSize: file.size
   });
 
 
 }
 
-const isOverSize = (file) => {
-  const maxSize = 500 * 1024 * 1024; // 500MB
+const overSize = (file) => {
+  const maxSize = 1024 * 1024 * 500; // 300MB
   const isOverSize = file.size >= maxSize;
   if (isOverSize) {
-    Message.error(file.name + '超出大小限制');
+    showNotify.danger(file.name + '超过500MB!');
   }
   return isOverSize;
 };
@@ -79,18 +79,21 @@ const isOverSize = (file) => {
 
 <template>
   <div class="upload-container">
-    <van-uploader
-        :after-read="handleFileSelect"
-        :max-size="isOverSize"
-        accept="*"
+    <nut-uploader
+        :auto-upload="false"
+        :before-upload="handleFileSelect"
         multiple
     >
-      <van-button icon="plus" type="primary">上传文件</van-button>
-    </van-uploader>
+      <nut-button icon="plus" type="success">上传文件
+        <template #icon>
+          <Uploader/>
+        </template>
+      </nut-button>
+    </nut-uploader>
 
     <div v-for="file in Object.values(uploadFiles)" :key="file.id" class="file-item">
-      <van-cell :title="file.name" :value="`${file.progress}%`"/>
-      <van-progress :percentage="file.progress" stroke-width="4"/>
+      <nut-cell :title="file.name" :desc="`${file.progress}%`"/>
+      <nut-progress :percentage="file.progress" stroke-width="4"/>
     </div>
   </div>
 </template>

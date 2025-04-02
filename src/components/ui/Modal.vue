@@ -46,7 +46,7 @@ const handleClose = () => {
           :style="{ height:  typeof maxHeight === 'number' ? `${width}px` : maxHeight, width: typeof width === 'number' ? `${width}px` : width,background: backgroundNone ? 'none' : '#fff' }">
         <!-- 头部 -->
         <div class="modal-header" v-if="showHeader">
-          <h2 class="modal-title">{{ title }}</h2>
+          <h3>{{ title }}</h3>
           <button class="close-button" @click="handleClose">&times;</button>
         </div>
 
@@ -83,7 +83,7 @@ const handleClose = () => {
   max-width: 400px;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  padding: 10px;
+  padding: 0 10px;
   min-height: 40vh;
   display: flex;
   flex-direction: column;

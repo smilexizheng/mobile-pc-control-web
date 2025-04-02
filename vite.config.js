@@ -2,9 +2,8 @@ import {fileURLToPath, URL} from 'node:url'
 
 import {defineConfig} from 'vite'
 import vue from '@vitejs/plugin-vue'
-import AutoImport from "unplugin-auto-import/vite";
-import Components from "unplugin-vue-components/vite";
-import { VantResolver } from "@vant/auto-import-resolver";
+import Components from 'unplugin-vue-components/vite'
+import NutUIResolver from '@nutui/auto-import-resolver'
 
 import vueDevTools from 'vite-plugin-vue-devtools'
 
@@ -12,11 +11,9 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 export default defineConfig({
     plugins: [
         vue(),
-        AutoImport({
-            resolvers: [VantResolver()],
-        }),
+        // 开启 unplugin 插件，自动引入 NutUI 组件
         Components({
-            resolvers: [VantResolver()],
+            resolvers: [NutUIResolver()],
         }),
         // vueDevTools(),
     ],

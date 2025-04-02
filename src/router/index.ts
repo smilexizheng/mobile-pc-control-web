@@ -11,33 +11,33 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'home',
+      name: '首页',
       // @ts-ignore
       component: () => import('../views/Home/index.vue')
     },
     {
       path: '/mouse',
-      name: 'mouse',
+      name: '远程控制',
       component: Mouse
     },
     {
       path: '/screen-live',
-      name: 'screenLive',
+      name: '屏幕直播',
       component:ScreenLive
     },
     {
       path: '/event-config',
-      name: 'eventConfig',
+      name: '自动化配置',
       component: EventConfig,
     },
     {
       path: '/monitor-window',
-      name: 'MonitorWindow',
+      name: '窗口监控',
       component: MonitorWindow,
     },
     {
       path: '/transfer',
-      name: 'transfer',
+      name: '文件共享',
       component: Transfer,
     },
   ]
