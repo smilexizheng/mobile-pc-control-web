@@ -42,11 +42,11 @@ export const CLIENT_EMIT_EVENTS = {
 
 // 文件传输
     FILE_START: 'file-start',
-    FIlE_ACK: 'file-ack',
-    FIlE_CHUNK: 'file-chunk',
-    FIlE_END: 'file-end',
-    FIlE_COMPLETE: 'file-complete',
-    FIlE_PROGRESS: 'file-progress',
+    FILE_ACK: 'file-ack',
+    FILE_CHUNK: 'file-chunk',
+    FILE_END: 'file-end',
+    FILE_COMPLETE: 'file-complete',
+    FILE_PROGRESS: 'file-progress',
 
 //     任务计划
     SCHEDULE_GET: 'schedule:get',

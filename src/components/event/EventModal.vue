@@ -2,6 +2,7 @@
 import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
 import ShortcutPicker from "@/components/event/ShortcutPicker.vue";
 import {showDialog} from '@nutui/nutui'
+import {ref} from "vue";
 
 const props = defineProps({
   event: {
@@ -14,6 +15,8 @@ const props = defineProps({
   }
 })
 
+
+const container = ref(null)
 const addEvent = () => {
   props.event.events.push({
     event: CE.SYS_POINTER_MOVE,
@@ -38,7 +41,9 @@ const submitEvents = () => {
 
   <!-- 可滚动内容区域 -->
   <!--    <div class="scroll-content">-->
-  <div class="event-list">
+  <div class="event-list"
+       ref="container"
+  >
     <!-- 事件名称和颜色 -->
     <div class="form-group">
       <label class="input-label">事件名称</label>
@@ -63,12 +68,14 @@ const submitEvents = () => {
     </div>
 
     <nut-sticky top="80">
-      <button class="ios-button secondary" @click="addEvent">
-        新增事件
-      </button>
-      <button class="ios-button primary" @click="submitEvents">
-        完成配置（共{{ event.events.length }}项）
-      </button>
+      <nut-space>
+        <nut-button type="primary" @click="submitEvents">
+          完成配置（共{{ event.events.length }}项）
+        </nut-button>
+        <nut-button type="default" @click="addEvent">
+          新增事件
+        </nut-button>
+      </nut-space>
     </nut-sticky>
 
     <div class="event-list">
@@ -167,7 +174,7 @@ const submitEvents = () => {
               <input
                   type="checkbox"
                   v-model="event.eventData.double"
-                  class="ios-checkbox"
+                  class="checkbox"
               > 双击
             </label>
           </div>
@@ -290,7 +297,7 @@ const submitEvents = () => {
   padding: 12px;
 }
 
-.ios-checkbox {
+.checkbox {
   width: 18px;
   height: 18px;
   border: 2px solid #007AFF;

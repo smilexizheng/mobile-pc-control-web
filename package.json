@@ -14,6 +14,7 @@
     "@nutui/icons-vue": "^0.1.1",
     "@nutui/nutui": "^4.3.13",
     "@vueuse/core": "^12.7.0",
+    "dayjs": "^1.11.13",
     "flv.js": "^1.6.2",
     "pinia": "^3.0.1",
     "socket.io-client": "^4.8.1",

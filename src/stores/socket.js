@@ -67,7 +67,7 @@ export const useSocketStore = defineStore('socket', () => {
                 if (data.success) {
                     // todo 某些事件不需要提示
                     if (data.event?.charAt(0) !== 's') {
-                        showToast.text(data.msg || data.event + '操作成功')
+                        // showToast.text(data.msg || data.event + '操作成功')
                     }
                 } else {
                     showNotify.warn(data.msg || data.event + '操作失败')

@@ -16,7 +16,7 @@ export const LocalEventStore = defineStore('LocalEventStore', () => {
 
     const defaultSchedule = () => {
         return {
-            name: '计划任务', color: '#3069e5', cron: '',events: []
+            name: '计划任务', color: '#3069e5', cron: '',events: [],runOnCreate:true,runOnStart:false
         }
     }
 

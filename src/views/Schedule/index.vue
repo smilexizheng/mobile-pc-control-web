@@ -4,13 +4,15 @@ import Modal from "@/components/ui/Modal.vue";
 import {useSocketStore} from "@/stores/socket.js";
 import {LocalEventStore} from "@/stores/localEventStore.js";
 import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
+import EventModal from "@/components/event/EventModal.vue";
+import dayjs from "dayjs";
 
 const localEventStore = LocalEventStore()
 const socketStore = useSocketStore()
 const scheduleList = ref([])
 const eventModalOpen = ref(false)
 const editEvent = ref(null)
-
+const time = ref(new Date())
 const timeSelect = ref(false)
 onMounted(() => {
   socketStore.on(CE.SCHEDULE_GET, (data) => {
@@ -40,11 +42,32 @@ const handleAdd = () => {
 }
 
 
+const confirm = () => {
+  editEvent.value.cron = dayjs(time.value).format('YYYY-MM-DD HH:mm:ss')
+  timeSelect.value = false
+}
+
 </script>
 
 <template>
   <Modal v-model="eventModalOpen" title="任务计划">
-    <nut-input v-model="editEvent.cron" placeholder="请输入执行时间/cron表达式, [30 * * * *]" clearable></nut-input>
+    <nut-input v-model="editEvent.cron" placeholder="执行时间/cron 30 * * * * *" clearable>
+      <template #right>
+        <nut-button type="primary" size="small" @click="timeSelect = true">时间</nut-button>
+      </template>
+    </nut-input>
+    <nut-popup v-model:visible="timeSelect" position="bottom">
+      <nut-date-picker
+          type="datetime"
+          v-model="time"
+          :min-date="new Date()"
+          :max-date="dayjs().add(1, 'month').toDate()"
+          @confirm="confirm"
+      ></nut-date-picker>
+    </nut-popup>
+
+    <nut-checkbox v-model="editEvent.runOnCreate">提交后运行</nut-checkbox>
+    <nut-checkbox v-model="editEvent.runOnStart">程序启动运行</nut-checkbox>
     <EventModal :event="editEvent" :ok="handleAdd"/>
   </Modal>
   <div class="mobile-list">
