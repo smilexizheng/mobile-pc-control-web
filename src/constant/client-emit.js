@@ -46,5 +46,11 @@ export const CLIENT_EMIT_EVENTS = {
     FIlE_CHUNK: 'file-chunk',
     FIlE_END: 'file-end',
     FIlE_COMPLETE: 'file-complete',
-    FIlE_PROGRESS: 'file-progress'
+    FIlE_PROGRESS: 'file-progress',
+
+//     任务计划
+    SCHEDULE_GET: 'schedule:get',
+    SCHEDULE_DELETE: 'schedule:delete',
+    SCHEDULE_ADD: 'schedule:add',
+    SCHEDULE_TOGGLE_JOB: 'schedule:toggle-job',
 };

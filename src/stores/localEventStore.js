@@ -10,17 +10,17 @@ export const LocalEventStore = defineStore('LocalEventStore', () => {
 
     const defaultEvent = () => {
         return {
-            name: '控制键鼠', color: '#3069e5', events: [
-                {
-                    event: CE.SYS_POINTER_MOVE,
-                    eventData: {x: 0, y: 0},
-                    delay: 0
-                }
-            ]
+            name: '控制键鼠', color: '#3069e5', events: []
+        }
+    }
+
+    const defaultSchedule = () => {
+        return {
+            name: '计划任务', color: '#3069e5', cron: '',events: []
         }
     }
 
 
 
-    return {customEvents,defaultEvent}
+    return {customEvents,defaultEvent,defaultSchedule}
 })

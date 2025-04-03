@@ -85,6 +85,7 @@ const submitEvents = () => {
             <option :value="CE.TYPING">输入文本</option>
             <option :value="CE.OPEN_URL">打开网址</option>
             <option :value="CE.OPEN_APP">打开应用</option>
+            <option :value="CE.SYS_SHUTDOWN">关机</option>
           </select>
         </div>
 

@@ -4,6 +4,7 @@ import Mouse from '../views/Mouse/index.vue'
 import ScreenLive from '../views/ScreenLive/index.vue'
 import MonitorWindow from '../views/MonitorWindow/index.vue'
 import Transfer from '../views/Transfer/index.vue'
+import Schedule from '../views/Schedule/index.vue'
 
 
 const router = createRouter({
@@ -39,6 +40,11 @@ const router = createRouter({
       path: '/transfer',
       name: '文件共享',
       component: Transfer,
+    },
+    {
+      path: '/schedule',
+      name: '任务计划',
+      component: Schedule,
     },
   ]
 })

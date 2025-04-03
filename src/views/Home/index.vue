@@ -51,6 +51,7 @@ const apps = ref([
       {name: "窗口", color: "#5968f8", action: "router", toLink: "/monitor-window"},
       {name: "事件配置", color: "#4CAF50", action: "router", toLink: "/event-config"},
       {name: "桌面", color: "#fd9b1b", action: "router", toLink: "/screen-live"},
+      {name: "任务计划", color: "#f51fc3", action: "router", toLink: "/schedule"},
     ]
   },
 
