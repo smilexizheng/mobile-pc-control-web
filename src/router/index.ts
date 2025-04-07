@@ -23,12 +23,12 @@ const router = createRouter({
     },
     {
       path: '/screen-live',
-      name: '屏幕直播',
+      name: '屏幕监视',
       component:ScreenLive
     },
     {
       path: '/event-config',
-      name: '自动化配置',
+      name: '我的指令',
       component: EventConfig,
     },
     {

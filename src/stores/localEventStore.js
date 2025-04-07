@@ -1,12 +1,12 @@
 import {defineStore} from 'pinia'
-import { useStorage } from '@vueuse/core'
 import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
-
+import {useSocketStore} from "@/stores/socket.js";
+import {ref} from "vue";
 
 export const LocalEventStore = defineStore('LocalEventStore', () => {
 
-
-    const customEvents = useStorage('custom-events', [])
+    const socketStore = useSocketStore();
+    const customEvents = ref([])
 
     const defaultEvent = () => {
         return {
@@ -16,11 +16,22 @@ export const LocalEventStore = defineStore('LocalEventStore', () => {
 
     const defaultSchedule = () => {
         return {
-            name: '计划任务', color: '#3069e5', cron: '',events: [],runOnCreate:true,runOnStart:false
+            name: '计划任务', color: '#3069e5', cron: '', events: [], runOnCreate: true, runOnStart: false
         }
     }
 
 
+    const putEvent = (data) => {
+        socketStore.emit(CE.EVENTS_PUT, data)
+    }
+    const delEvent = (key) => {
+        socketStore.emit(CE.EVENTS_DELETE, key)
+    }
 
-    return {customEvents,defaultEvent,defaultSchedule}
+
+    return {
+        customEvents, defaultEvent, defaultSchedule,
+        putEvent,
+        delEvent
+    }
 })
