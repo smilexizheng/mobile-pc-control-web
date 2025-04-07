@@ -89,6 +89,7 @@ const submitEvents = () => {
             <option :value="CE.SYS_POINTER_MOVE">指针移动</option>
             <option :value="CE.SYS_MOUSE_CLICK">鼠标点击</option>
             <option :value="CE.KEYPRESS">快捷键</option>
+            <option :value="CE.SYS_SHELL">执行命令行</option>
             <option :value="CE.TYPING">输入文本</option>
             <option :value="CE.OPEN_URL">打开网址</option>
             <option :value="CE.OPEN_APP">打开应用</option>
@@ -136,6 +137,10 @@ const submitEvents = () => {
         </div>
         <div v-if="event.event === CE.OPEN_APP" class="form-group">
           暂不支持打开应用
+        </div>
+
+        <div v-if="event.event === CE.SYS_SHELL" class="form-group">
+          功能完善中
         </div>
 
         <div v-if="event.event === CE.SYS_POINTER_MOVE" class="form-group">

@@ -6,6 +6,7 @@ import router from "@/router/index.js";
 import {useDebounceFn} from '@vueuse/core'
 import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
 import {showNotify,showToast  } from '@nutui/nutui'
+import {LocalEventStore} from "@/stores/localEventStore.js";
 
 /**
  *  持续触发 任意socket某个事件
@@ -13,6 +14,7 @@ import {showNotify,showToast  } from '@nutui/nutui'
  *
  */
 export const useSocketStore = defineStore('socket', () => {
+    const localEventStore = LocalEventStore()
     const socket = ref(null)
     const isConnected = ref(false)
 
@@ -73,6 +75,14 @@ export const useSocketStore = defineStore('socket', () => {
                     showNotify.warn(data.msg || data.event + '操作失败')
                 }
             })
+
+            socket.value.on(CE.EVENTS_GET, (data) => {
+                console.log(data)
+                localEventStore.customEvents = data
+            })
+
+
+
         }
     }
 

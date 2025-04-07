@@ -1,29 +1,34 @@
 <script setup>
-import {ref} from 'vue';
+import {ref,onMounted} from 'vue';
 import EventModal from "@/components/event/EventModal.vue";
 import {LocalEventStore} from "@/stores/localEventStore.js";
 import Modal from "@/components/ui/Modal.vue";
 import {showDialog} from '@nutui/nutui'
-
-
+import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
+import {useSocketStore} from "@/stores/socket.js";
+const socketStore = useSocketStore()
 const localEventStore = LocalEventStore()
 const eventModalOpen = ref(false)
-const editIndex = ref(null)
 
 const editEvent = ref(null)
 
-const handleEdit = (index) => {
-  editEvent.value = localEventStore.customEvents[index]
-  editIndex.value = index
+onMounted(() => {
+
+  socketStore.emit(CE.EVENTS_GET)
+})
+
+const handleEdit = (item) => {
+  editEvent.value = item
   eventModalOpen.value = true
 };
 
-const handleDelete = (index) => {
+const handleDelete = (key) => {
   showDialog({
     title: '温馨提示',
-    content: '确定要删除这个项目吗？',
+    content: '确定删除吗？',
     onOk: () => {
-      localEventStore.customEvents.splice(index, 1)
+      socketStore.emit(CE.EVENTS_DELETE, key)
+
     }
   })
 
@@ -31,17 +36,14 @@ const handleDelete = (index) => {
 
 const handleAdd = () => {
   eventModalOpen.value = false;
-  if (editIndex.value !== null) {
-    localEventStore.customEvents[editIndex.value] = editEvent.value
-    editIndex.value = null
-  } else {
-    localEventStore.customEvents.push(editEvent.value)
-  }
+  socketStore.emit(CE.EVENTS_PUT, editEvent.value)
+  editEvent.value = {}
+
 }
 </script>
 
 <template>
-  <Modal v-model="eventModalOpen" title="自定义功能">
+  <Modal v-model="eventModalOpen" title="编辑指令">
     <EventModal :event="editEvent" :ok="handleAdd"/>
   </Modal>
   <div class="mobile-list">
@@ -58,13 +60,13 @@ const handleAdd = () => {
         </div>
       </div>
       <div class="item-actions">
-        <button class="btn edit" @click="handleEdit(index)">编辑</button>
-        <button class="btn delete" @click="handleDelete(index)">删除</button>
+        <button class="btn edit" @click="handleEdit(item)">编辑</button>
+        <button class="btn delete" @click="handleDelete(item.id)">删除</button>
       </div>
     </div>
   </div>
   <nut-sticky position="bottom">
-    <nut-button block type="primary" @click="editEvent = localEventStore.defaultEvent(); eventModalOpen = true">添加自动化</nut-button>
+    <nut-button block type="primary" @click="editEvent = localEventStore.defaultEvent(); eventModalOpen = true">自定义指令</nut-button>
   </nut-sticky>
 </template>
 

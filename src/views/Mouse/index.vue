@@ -317,7 +317,7 @@ onUnmounted(() => {
     <TextInput/>
   </div>
   <Modal v-model="showQuickMenu" title="快捷功能" :showHeader="true" :showClose="true"
-         max-height="60vh">
+         max-height="80vh">
     <QuickMenu/>
   </Modal>
 
