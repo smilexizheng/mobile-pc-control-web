@@ -2,8 +2,9 @@
 import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
 import ShortcutPicker from "@/components/event/ShortcutPicker.vue";
 import {showDialog} from '@nutui/nutui'
-import {ref} from "vue";
-
+import {ref, onMounted,onUnmounted} from "vue";
+import {useSocketStore} from "@/stores/socket.js";
+const socketStore = useSocketStore()
 const props = defineProps({
   event: {
     type: Object,
@@ -15,7 +16,8 @@ const props = defineProps({
   }
 })
 
-
+// 鼠标指针位置
+const mousePos = ref({x: 0, y: 0})
 const container = ref(null)
 const addEvent = () => {
   props.event.events.push({
@@ -33,6 +35,20 @@ const submitEvents = () => {
   // 提交事件处理逻辑
   props.ok()
 }
+
+
+onMounted(() => {
+  socketStore.emit(CE.SYS_POINTER_POS);
+  socketStore.on(CE.SYS_POINTER_POS, (res) => {
+    mousePos.value = res
+    socketStore.emit(CE.SYS_POINTER_POS);
+  });
+});
+
+
+onUnmounted(() => {
+  socketStore.off(CE.SYS_POINTER_POS)
+})
 
 
 </script>
@@ -69,12 +85,13 @@ const submitEvents = () => {
 
     <nut-sticky top="80">
       <nut-space>
-        <nut-button type="primary" @click="submitEvents">
+        <nut-button type="primary" size="small" @click="submitEvents">
           完成配置（共{{ event.events.length }}项）
         </nut-button>
-        <nut-button type="default" @click="addEvent">
+        <nut-button type="default" size="small" @click="addEvent">
           新增事件
         </nut-button>
+        x:{{mousePos.x}} y:{{mousePos.y}}
       </nut-space>
     </nut-sticky>
 

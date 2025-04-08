@@ -34,9 +34,7 @@ const back = () => {
     <nut-navbar :title="appStore.title" :left-show="appStore.backVisible" @click-back="back"></nut-navbar>
   </nut-sticky>
   <RouterView v-if="socketStore.isConnected"/>
-  <div v-else>
-    <nut-empty image="network" description="未连接到服务器"></nut-empty>
-  </div>
+  <img v-else src="@/assets/images/network.png" style="width: 100%;"/>
 </template>
 
 <style scoped>

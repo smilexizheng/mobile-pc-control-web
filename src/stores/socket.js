@@ -68,16 +68,15 @@ export const useSocketStore = defineStore('socket', () => {
             socket.value.on(CE.RESPONSE, (data) => {
                 if (data.success) {
                     // todo 某些事件不需要提示
-                    if (data.event?.charAt(0) !== 's') {
-                        // showToast.text(data.msg || data.event + '操作成功')
-                    }
+                    // if (data.event?.charAt(0) !== 's') {
+                        showToast.text(data.msg || data.event + '操作成功')
+                    // }
                 } else {
                     showNotify.warn(data.msg || data.event + '操作失败')
                 }
             })
 
             socket.value.on(CE.EVENTS_GET, (data) => {
-                console.log(data)
                 localEventStore.customEvents = data
             })
 

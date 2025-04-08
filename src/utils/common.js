@@ -1,11 +1,13 @@
 import {useWindowSize} from "@vueuse/core";
 
 const setHeight = () => {
-    const { width, height } = useWindowSize()
+    const {width, height} = useWindowSize()
+
     function setRealViewportHeight() {
         const vh = height.value * 0.01
         document.documentElement.style.setProperty('--vh', `${vh}px`)
     }
+
 // 初始化设置
     setRealViewportHeight()
 // 监听窗口变化
@@ -35,20 +37,34 @@ const setHeight = () => {
     }, false);
 }
 
-const posThreshold = (x,y,threshold) => {
-       return Math.abs(x) > threshold || Math.abs(y) > threshold
+const posThreshold = (x, y, threshold) => {
+    return Math.abs(x) > threshold || Math.abs(y) > threshold
 }
 
 // 自定义 UUID 生成函数
 function generateUUID() {
-    return 'xxxxxxxx-xxxx-6xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    return 'xxxxxxxx-xxxx-6xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
         const r = Math.random() * 16 | 0
         const v = c === 'x' ? r : (r & 0x3 | 0x8)
         return v.toString(16)
     })
 }
 
+const parseJson = (str) => {
+    try {
+        if (typeof str === 'string') {
+            return JSON.parse(str)
+        } else if (typeof str === 'object') {
+            return new Function('"use strict"; return ' + str)();
+        } else {
+            return null
+        }
+    } catch (e) {
+        console.error(e)
+        return null
+    }
+
+}
 
 
-
-export {setHeight,posThreshold,generateUUID}
+export {setHeight, posThreshold, generateUUID,parseJson}

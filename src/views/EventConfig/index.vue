@@ -6,12 +6,14 @@ import Modal from "@/components/ui/Modal.vue";
 import {showDialog} from '@nutui/nutui'
 import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
 import {useSocketStore} from "@/stores/socket.js";
+import { useClipboard } from '@vueuse/core'
+import {showToast  } from '@nutui/nutui'
 const socketStore = useSocketStore()
 const localEventStore = LocalEventStore()
 const eventModalOpen = ref(false)
 
 const editEvent = ref(null)
-
+const { text, copy, copied, isSupported } = useClipboard()
 onMounted(() => {
 
   socketStore.emit(CE.EVENTS_GET)
@@ -38,7 +40,11 @@ const handleAdd = () => {
   eventModalOpen.value = false;
   socketStore.emit(CE.EVENTS_PUT, editEvent.value)
   editEvent.value = {}
+}
 
+const shareEvent = (item) => {
+  copy(JSON.stringify(item))
+  showToast.text(`${item.name}指令已复制到剪贴板`);
 }
 </script>
 
@@ -62,6 +68,7 @@ const handleAdd = () => {
       <div class="item-actions">
         <button class="btn edit" @click="handleEdit(item)">编辑</button>
         <button class="btn delete" @click="handleDelete(item.id)">删除</button>
+        <button class="btn edit" v-if="isSupported" @click="shareEvent(item)">分享</button>
       </div>
     </div>
   </div>

@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import EventConfig from '../views/EventConfig/index.vue'
+import ImportEvent from '../views/ImportEvent/index.vue'
 import Mouse from '../views/Mouse/index.vue'
 import ScreenLive from '../views/ScreenLive/index.vue'
 import MonitorWindow from '../views/MonitorWindow/index.vue'
@@ -30,6 +31,11 @@ const router = createRouter({
       path: '/event-config',
       name: '我的指令',
       component: EventConfig,
+    },
+    {
+      path: '/import-event',
+      name: '导入指令',
+      component: ImportEvent,
     },
     {
       path: '/monitor-window',
