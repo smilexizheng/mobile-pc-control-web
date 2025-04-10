@@ -24,12 +24,12 @@ const handleEdit = (item) => {
   eventModalOpen.value = true
 };
 
-const handleDelete = (key) => {
+const handleDelete = (item) => {
   showDialog({
     title: '温馨提示',
-    content: '确定删除吗？',
+    content: `确定删除${item.name}吗？`,
     onOk: () => {
-      socketStore.emit(CE.EVENTS_DELETE, key)
+      socketStore.emit(CE.EVENTS_DELETE, item.id)
 
     }
   })
@@ -67,7 +67,7 @@ const shareEvent = (item) => {
       </div>
       <div class="item-actions">
         <button class="btn edit" @click="handleEdit(item)">编辑</button>
-        <button class="btn delete" @click="handleDelete(item.id)">删除</button>
+        <button class="btn delete" @click="handleDelete(item)">删除</button>
         <button class="btn edit" v-if="isSupported" @click="shareEvent(item)">分享</button>
       </div>
     </div>

@@ -1,11 +1,11 @@
 import {defineStore} from 'pinia'
 import {io} from 'socket.io-client'
 import {ref} from "vue";
-import {useIntervalFn} from "@vueuse/core";
+import {useIntervalFn, useStorage} from "@vueuse/core";
 import router from "@/router/index.js";
 import {useDebounceFn} from '@vueuse/core'
 import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
-import {showNotify,showToast  } from '@nutui/nutui'
+import {showNotify, showToast} from '@nutui/nutui'
 import {LocalEventStore} from "@/stores/localEventStore.js";
 
 /**
@@ -17,10 +17,14 @@ export const useSocketStore = defineStore('socket', () => {
     const localEventStore = LocalEventStore()
     const socket = ref(null)
     const isConnected = ref(false)
+    const token = useStorage('socket-token', 'ssss1123') // returns Ref<number>
 
 
     const intervalData = ref(null);
     const interval = ref(50)
+
+    const tokenExpire = ref(false)
+
 
     const {
         pause: intervalPause,
@@ -41,16 +45,16 @@ export const useSocketStore = defineStore('socket', () => {
                 path: "/win-control.io",
                 transports: ['websocket'],
                 auth: {
-                    token: 'ssss'
+                    token: token.value
                 }
             })
 
             socket.value.on('connect', () => {
                 isConnected.value = true
+                tokenExpire.value = false
             })
 
             socket.value.on('disconnect', (reason) => {
-                console.log(reason)
                 showNotify.warn(reason)
                 isConnected.value = false
             })
@@ -60,8 +64,12 @@ export const useSocketStore = defineStore('socket', () => {
             })
 
             socket.value.on("connect_error", (err) => {
-                console.error(err)
                 showNotify.warn(err.message)
+                if (err?.data?.code === 401) {
+                    tokenExpire.value = true
+                    socket.value=null
+                }
+
             });
 
 
@@ -69,7 +77,7 @@ export const useSocketStore = defineStore('socket', () => {
                 if (data.success) {
                     // todo 某些事件不需要提示
                     // if (data.event?.charAt(0) !== 's') {
-                        showToast.text(data.msg || data.event + '操作成功')
+                    showToast.text(data.msg || data.event + '操作成功')
                     // }
                 } else {
                     showNotify.warn(data.msg || data.event + '操作失败')
@@ -79,7 +87,6 @@ export const useSocketStore = defineStore('socket', () => {
             socket.value.on(CE.EVENTS_GET, (data) => {
                 localEventStore.customEvents = data
             })
-
 
 
         }
@@ -99,6 +106,12 @@ export const useSocketStore = defineStore('socket', () => {
 
     function once(event, data) {
         socket.value?.once(event, data)
+    }
+
+    const setToken = (val) => {
+        if (!val) return
+        token.value = val
+        connect()
     }
 
 
@@ -159,7 +172,9 @@ export const useSocketStore = defineStore('socket', () => {
 
     return {
         socket,
+        tokenExpire,
         isConnected,
+        setToken,
         connect,
         disconnect,
         on,

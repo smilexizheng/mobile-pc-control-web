@@ -30,9 +30,9 @@ const apps = ref([
   {
     categoryName: "放大镜", modules: [
       {name: "开启", color: "#4CAF50", events: [{event: CE.KEYPRESS, eventData: {key: [Key.LeftWin, Key.Add]}}]},
-      {name: "关闭", color: "#2196F3", events: [{event: CE.KEYPRESS, eventData: {key: [Key.LeftWin, Key.Escape]}}]},
+      {name: "关闭", color: "#FF5722", events: [{event: CE.KEYPRESS, eventData: {key: [Key.LeftWin, Key.Escape]}}]},
       {name: "放大", color: "#2196F3", events: [{event: CE.KEYPRESS, eventData: {key: [Key.LeftWin, Key.Add]}}]},
-      {name: "缩小", color: "#FF5722", events: [{event: CE.KEYPRESS, eventData: {key: [Key.LeftWin, Key.Subtract]}}]}
+      {name: "缩小", color: "#2196F3", events: [{event: CE.KEYPRESS, eventData: {key: [Key.LeftWin, Key.Subtract]}}]}
     ],
   }
 
@@ -54,7 +54,7 @@ const handleTouchEnd = (e) => {
   <div class="home-screen">
     <div class="app-area" v-for="(m) in apps">
       <div class="area-title">{{ m.categoryName }}</div>
-      <nut-grid :column-num="5" :border="false">
+      <nut-grid :column-num="4" :border="false">
         <nut-grid-item :text="module.name" v-for="(module) in m.modules"
                        @touchstart="handleTouchStart"
                        @touchend="handleTouchEnd"
@@ -73,7 +73,7 @@ const handleTouchEnd = (e) => {
 
     <div class="app-area">
       <div class="area-title">我的</div>
-      <nut-grid :column-num="5" :border="false">
+      <nut-grid :column-num="4" :border="false">
         <nut-grid-item :text="module.name" v-for="(module) in localEventStore.customEvents"
                        @touchstart="handleTouchStart"
                        @touchend="handleTouchEnd"
@@ -113,28 +113,10 @@ const handleTouchEnd = (e) => {
   color: #59fd06;
 }
 
-.app-grid {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  align-content: center;
-  justify-content: flex-start;
-}
-
-
-.app-icon {
-  margin-bottom: 2px;
-  flex: 0 0 calc(20%); /* 4列布局计算（25%宽度 - 间距补偿） */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: transform 0.2s ease;
-  cursor: pointer;
-}
 
 .text-icon {
-  width: 54px;
-  height: 54px;
+  width: 52px;
+  height: 52px;
   border-radius: 10px;
   margin-bottom: 6px;
   display: flex;
@@ -142,10 +124,10 @@ const handleTouchEnd = (e) => {
   justify-content: center;
   color: white;
   font-size: 12px;
-  font-weight: 500;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s,
-  box-shadow 0.2s;
+  /*font-weight: 500;*/
+  /*box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);*/
+  /*transition: transform 0.2s,*/
+  /*box-shadow 0.2s;*/
 }
 
 .app-icon:active .text-icon {

@@ -84,7 +84,7 @@ const handleClose = () => {
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   padding: 0 10px;
-  min-height: 40vh;
+  min-height: 30vh;
   display: flex;
   flex-direction: column;
 }
