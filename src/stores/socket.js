@@ -17,7 +17,7 @@ export const useSocketStore = defineStore('socket', () => {
     const localEventStore = LocalEventStore()
     const socket = ref(null)
     const isConnected = ref(false)
-    const token = useStorage('socket-token', 'ssss1123') // returns Ref<number>
+    const token = useStorage('socket-token', 'ssss') // returns Ref<number>
 
 
     const intervalData = ref(null);
@@ -86,6 +86,12 @@ export const useSocketStore = defineStore('socket', () => {
 
             socket.value.on(CE.EVENTS_GET, (data) => {
                 localEventStore.customEvents = data
+            })
+
+            socket.value.on('reconnected', () => {
+               socket.value.disconnect()
+               socket.value=null
+                connect()
             })
 
 
