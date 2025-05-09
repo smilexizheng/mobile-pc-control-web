@@ -41,7 +41,8 @@ onMounted(() => {
   socketStore.emit(CE.SYS_POINTER_POS);
   socketStore.on(CE.SYS_POINTER_POS, (res) => {
     mousePos.value = res
-    socketStore.emit(CE.SYS_POINTER_POS);
+    setTimeout(()=>{socketStore.emit(CE.SYS_POINTER_POS);},100)
+
   });
 });
 
