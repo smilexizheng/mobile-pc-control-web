@@ -10,6 +10,7 @@ export const useAppStore = defineStore('app', () => {
     const backVisible = ref(true)
 
 
+
     router.beforeEach((to, from) => {
         if (to.path == '/' || to.path == '/mouse') {
             hideNavBar()

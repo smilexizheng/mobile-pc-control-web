@@ -5,6 +5,8 @@ import Mouse from '../views/Mouse/index.vue'
 import ScreenLive from '../views/ScreenLive/index.vue'
 import MonitorWindow from '../views/MonitorWindow/index.vue'
 import Transfer from '../views/Transfer/index.vue'
+import Chat from '../views/Transfer/Chat.vue'
+import ChatList from '../views/Transfer/ChatList.vue'
 import Schedule from '../views/Schedule/index.vue'
 
 
@@ -44,8 +46,17 @@ const router = createRouter({
     },
     {
       path: '/transfer',
-      name: '文件共享',
+      name: '文件上传',
       component: Transfer,
+    },
+    {
+      path: '/chat',
+      name: '消息互传',
+      component: Chat,
+    },    {
+      path: '/chatList',
+      name: '在线列表',
+      component: ChatList,
     },
     {
       path: '/schedule',

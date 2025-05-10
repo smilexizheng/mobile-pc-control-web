@@ -128,6 +128,7 @@ const overSize = (file) => {
       <nut-cell :title="file.name" :desc="`${file.progress}%`"/>
       <nut-progress :percentage="file.progress" stroke-width="4"/>
     </div>
+
   </div>
 </template>
 

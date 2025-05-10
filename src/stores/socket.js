@@ -7,6 +7,7 @@ import {useDebounceFn} from '@vueuse/core'
 import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
 import {showNotify, showToast} from '@nutui/nutui'
 import {LocalEventStore} from "@/stores/localEventStore.js";
+import {useChatStore} from "@/stores/chatStore.js";
 
 /**
  *  持续触发 任意socket某个事件
@@ -71,6 +72,12 @@ export const useSocketStore = defineStore('socket', () => {
                 }
 
             });
+
+            socket.value.on('pc-socket-message',(data)=>{
+                console.log(data)
+                const {addMessage} = useChatStore()
+                addMessage(data)
+            })
 
 
             socket.value.on(CE.RESPONSE, (data) => {

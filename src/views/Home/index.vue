@@ -54,7 +54,8 @@ const apps = ref([
     categoryName: "应用", modules: [
       {name: "鼠标键盘", color: "#4CAF50", action: "router", toLink: "/mouse"},
       {name: "浏览器", color: "#2196F3", events: [{event: CE.OPEN_URL, eventData: {url: "https://"}}]},
-      {name: "文件共享", color: "#2196F3", action: "router", toLink: "/transfer"},
+      {name: "文件上传", color: "#2196F3", action: "router", toLink: "/transfer"},
+      {name: "消息互传", color: "#2196F3", action: "router", toLink: "/chatList"},
       {name: "窗口", color: "#2196F3", action: "router", toLink: "/monitor-window"},
       {name: "桌面", color: "#2196F3", action: "router", toLink: "/screen-live"},
       {name: "我的指令", color: "#22bdff", action: "router", toLink: "/event-config"},
