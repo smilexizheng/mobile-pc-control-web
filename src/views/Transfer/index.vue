@@ -22,7 +22,7 @@ onMounted(() => {
     const fileObj = uploadFiles.value[fileId];
     if (!fileObj) return;
 
-    const CHUNK_SIZE = 1024 * 1024 * navigator.connection.downlink; // 1MB 分片大小
+    const CHUNK_SIZE = 1024 * 1024 * (navigator.connection?.downlink || 10); // 1MB 分片大小
     const file = fileObj.file;
 
     if (fileObj.offset === undefined) {
