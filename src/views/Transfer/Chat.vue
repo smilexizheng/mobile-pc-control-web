@@ -3,7 +3,7 @@
 
     <div class="message-list" ref="messageList">
       <div
-          v-for="message in messages"
+          v-for="message in messages[currentChat.id]"
           :key="message.id"
           :class="['message', message.sender === 'me' ? 'sent' : 'received']"
       >
@@ -33,7 +33,7 @@ import { useChatStore } from '@/stores/chatStore'
 import {useAppStore} from "@/stores/appStore.js";
 import {useSocketStore} from "@/stores/socket.js";
 const appStore = useAppStore()
-const { currentChat, messages, setCurrentChat,sendMessage,contacts } = useChatStore()
+const { currentChat, messages ,sendMessage } = useChatStore()
 const inputMessage = ref('')
 const messageList = ref(null)
 const socketStore = useSocketStore()
@@ -42,7 +42,7 @@ const socketStore = useSocketStore()
 const send = () => {
   if (inputMessage.value.trim()) {
     sendMessage(inputMessage.value)
-    socketStore.emit('web-socket-msg',inputMessage.value)
+    socketStore.emit('chat-message',{to:currentChat.id,content:inputMessage.value})
     inputMessage.value = ''
     scrollToBottom()
   }

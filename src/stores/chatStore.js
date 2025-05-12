@@ -3,9 +3,9 @@ import { ref } from 'vue'
 
 export const useChatStore = defineStore('chat', () => {
     const currentChat = ref(null) // 当前聊天对象
-    const messages = ref([]) // 所有消息
-    const contacts = ref([ // 联系人列表
-        { id: 1, name: 'PC主机', avatar: '', lastMessage: '', time: '12:30' },
+    const messages = ref({}) // 所有消息
+    const clients = ref([ // 联系人列表
+        // { id: 1, name: 'PC主机', avatar: '', lastMessage: '', time: '12:30' },
         // { id: 2, name: '李四', avatar: '', lastMessage: '晚上一起吃饭', time: '昨天' },
         // { id: 3, name: '王五', avatar: '', lastMessage: '项目进展如何', time: '星期一' }
     ])
@@ -24,11 +24,11 @@ export const useChatStore = defineStore('chat', () => {
             content,
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
-        messages.value.push(newMessage)
 
-        // 更新联系人最后一条消息
+        pushClientMsg(currentChat.value.id,newMessage)
+
         if (currentChat.value) {
-            const contact = contacts.value.find(c => c.id === currentChat.value.id)
+            const contact = clients.value.find(c => c.id === currentChat.value.id)
             if (contact) {
                 contact.lastMessage = content
                 contact.time = '刚刚'
@@ -36,16 +36,24 @@ export const useChatStore = defineStore('chat', () => {
         }
     }
 
-    const addMessage = (content) => {
+    const addMessage = (data) => {
         const newMessage = {
             id: Date.now(),
             sender: 'received',
-            content,
+            content:data.content,
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
-        messages.value.push(newMessage)
+        pushClientMsg(data.form,newMessage)
 
     }
 
-    return { currentChat, messages, contacts, setCurrentChat, addMessage,sendMessage }
+    const pushClientMsg = (id,data)=>{
+        if(!messages.value[id]){
+            messages.value[id]=[]
+        }
+        messages.value[id].push(data);
+
+    }
+
+    return { currentChat, messages, clients, setCurrentChat, addMessage,sendMessage }
 })

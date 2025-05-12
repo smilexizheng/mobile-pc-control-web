@@ -53,6 +53,26 @@ export const useSocketStore = defineStore('socket', () => {
             socket.value.on('connect', () => {
                 isConnected.value = true
                 tokenExpire.value = false
+
+                // 聊天相关
+                socket.value?.on('client-list', (data) => {
+                    const chatStore = useChatStore()
+                    chatStore.clients = Object.values(data)
+                })
+                socket.value?.on('client-leave', (data) => {
+                    const chatStore = useChatStore()
+                    if (chatStore.messages[data]) {
+                        delete chatStore[data]
+                    }
+                })
+
+                socket.value?.on('chat-message', (message) => {
+                    showNotify.success(`收到消息${message.content}`)
+                    const {addMessage} = useChatStore()
+                    addMessage(message)
+
+                })
+
             })
 
             socket.value.on('disconnect', (reason) => {
@@ -68,16 +88,10 @@ export const useSocketStore = defineStore('socket', () => {
                 showNotify.warn(err.message)
                 if (err?.data?.code === 401) {
                     tokenExpire.value = true
-                    socket.value=null
+                    socket.value = null
                 }
 
             });
-
-            socket.value.on('pc-socket-message',(data)=>{
-                console.log(data)
-                const {addMessage} = useChatStore()
-                addMessage(data)
-            })
 
 
             socket.value.on(CE.RESPONSE, (data) => {
@@ -96,8 +110,8 @@ export const useSocketStore = defineStore('socket', () => {
             })
 
             socket.value.on('reconnected', () => {
-               socket.value.disconnect()
-               socket.value=null
+                socket.value.disconnect()
+                socket.value = null
                 connect()
             })
 

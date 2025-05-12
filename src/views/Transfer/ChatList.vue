@@ -1,43 +1,46 @@
 <script setup>
 import { useChatStore } from '@/stores/chatStore'
+import { useSocketStore } from '@/stores/socket.js'
 import {useRouter} from "vue-router";
 const router = useRouter()
-const { contacts, setCurrentChat } = useChatStore()
+const chatStore= useChatStore()
+const socketStore = useSocketStore()
 
-const selectContact = (contact) => {
-  setCurrentChat(contact)
+const selectClient = (client) => {
+  chatStore.setCurrentChat(client)
   router.push("/chat")
 }
 </script>
 
 <template>
+  <template     v-for="client in chatStore.clients" :key="client.id">
     <nut-cell
-        v-for="contact in contacts"
         size="large"
-        :key="contact.id"
-        :title="contact.name"
-        @click="selectContact(contact)"
+        v-if="client.id !== socketStore.socket?.id"
+        :title="(client.name || client.userAgent.device.model)+' '+client.clientIp"
+        @click="selectClient(client)"
     >
 
 <!--      <template #icon>-->
 <!--        <nut-avatar size="large"></nut-avatar>-->
 <!--      </template>-->
 <!--      <template #title>-->
-<!--        <span>{{ contact.name }}</span>-->
+<!--        <span>{{ client.name }}</span>-->
 <!--      </template>-->
 <!--      <template #desc>-->
-<!--        <div class="contact-desc">-->
-<!--          <span>{{ contact.lastMessage }}</span>-->
-<!--          <span class="time">{{ contact.time }}</span>-->
+<!--        <div class="client-desc">-->
+<!--          <span>{{ client.lastMessage }}</span>-->
+<!--          <span class="time">{{ client.time }}</span>-->
 <!--        </div>-->
 <!--      </template>-->
     </nut-cell>
+  </template>
 </template>
 
 
 
 <style scoped>
-.contact-desc {
+.client-desc {
   display: flex;
   justify-content: space-between;
   width: 100%;
