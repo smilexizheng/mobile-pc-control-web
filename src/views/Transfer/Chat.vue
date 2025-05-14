@@ -1,14 +1,16 @@
 <template>
-  <div class="chat-window" v-if="currentChat">
-
+  <div class="chat-window" v-if="chatStore.currentChat">
     <div class="message-list" ref="messageList">
       <div
-          v-for="message in messages[currentChat.id]"
+          v-for="message in chatStore.messages[chatStore.currentChat.id]"
           :key="message.id"
           :class="['message', message.sender === 'me' ? 'sent' : 'received']"
       >
-        <div class="message-content">
+        <div v-if="message.msgType==='txt'" class="message-content">
           {{ message.content }}
+        </div>
+        <div v-if="message.msgType==='file'" class="message-content" @click="downloadFile(message)">
+          {{ message.fileName }}
         </div>
         <div class="message-time">
           {{ message.time }}
@@ -21,28 +23,55 @@
           v-model="inputMessage"
           placeholder="输入消息..."
           @keyup.enter="send"
-      />
-      <nut-button type="primary" @click="send">发送</nut-button>
+          clearable
+      >
+        <template #left>
+
+              <nut-uploader
+                  :auto-upload="false"
+                  :before-upload="handleFileSelect"
+                  multiple
+              >
+                <nut-button icon="plus" type="success">
+                  <template #icon>
+                    <Uploader/>
+                  </template>
+                </nut-button>
+              </nut-uploader>
+
+        </template>
+        <template #right>
+          <nut-button type="primary" @click="send">发送</nut-button>
+        </template>
+      </nut-input>
+
     </div>
   </div>
 </template>
 
 <script setup>
-import {ref, watch, nextTick, computed, onMounted} from 'vue'
+import {ref, nextTick, onMounted,} from 'vue'
 import { useChatStore } from '@/stores/chatStore'
-import {useAppStore} from "@/stores/appStore.js";
 import {useSocketStore} from "@/stores/socket.js";
-const appStore = useAppStore()
-const { currentChat, messages ,sendMessage } = useChatStore()
+import {Uploader} from "@nutui/icons-vue";
+import {useRouter} from "vue-router";
+const chatStore = useChatStore()
 const inputMessage = ref('')
 const messageList = ref(null)
 const socketStore = useSocketStore()
+const router = useRouter()
 
+onMounted(()=>{
+  if(!chatStore.currentChat){
+    router.back()
+  }
+
+})
 
 const send = () => {
   if (inputMessage.value.trim()) {
-    sendMessage(inputMessage.value)
-    socketStore.emit('chat-message',{to:currentChat.id,content:inputMessage.value})
+    chatStore.sendMessage({content:inputMessage.value,msgType:'txt'})
+    socketStore.emit('chat-message',{to:chatStore.currentChat.id,content:inputMessage.value})
     inputMessage.value = ''
     scrollToBottom()
   }
@@ -56,8 +85,23 @@ const scrollToBottom = () => {
   })
 }
 
-const backToList = () => {
-  currentChat.value = null
+
+const handleFileSelect = async (files) => {
+  if (files.length > 0) {
+    for (let i = 0; i < files.length; i++) {
+      socketStore.handleUpload(files[i],chatStore.currentChat.id);
+    }
+  }
+  return files;
+};
+
+const downloadFile = (data)=>{
+  const link = document.createElement('a')
+  link.href = `/downloadFile?fileId=${data.fileId}`
+  // link.target='_blank'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
 }
 </script>
 
@@ -75,7 +119,7 @@ const backToList = () => {
 }
 
 .message-list {
-  height: calc(100% - 120px);
+  height: calc(100% - 100px);
   padding: 10px;
   overflow-y: auto;
   background-color: #f5f5f5;
@@ -119,14 +163,8 @@ const backToList = () => {
 }
 
 .input-area {
-  display: flex;
-  padding: 10px;
-  background-color: white;
-  border-top: 1px solid #eee;
+  height: 50px;
 }
 
-.input-area .nut-input {
-  flex: 1;
-  margin-right: 10px;
-}
+
 </style>

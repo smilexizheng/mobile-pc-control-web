@@ -8,6 +8,7 @@ import {CLIENT_EMIT_EVENTS as CE} from "@/constant/client-emit.js";
 import {showNotify, showToast} from '@nutui/nutui'
 import {LocalEventStore} from "@/stores/localEventStore.js";
 import {useChatStore} from "@/stores/chatStore.js";
+import {generateUUID, overSize} from "@/utils/common.js";
 
 /**
  *  持续触发 任意socket某个事件
@@ -25,6 +26,8 @@ export const useSocketStore = defineStore('socket', () => {
     const interval = ref(50)
 
     const tokenExpire = ref(false)
+    // 待上传的文件
+    const uploadFiles = ref({});
 
 
     const {
@@ -53,26 +56,6 @@ export const useSocketStore = defineStore('socket', () => {
             socket.value.on('connect', () => {
                 isConnected.value = true
                 tokenExpire.value = false
-
-                // 聊天相关
-                socket.value?.on('client-list', (data) => {
-                    const chatStore = useChatStore()
-                    chatStore.clients = Object.values(data)
-                })
-                socket.value?.on('client-leave', (data) => {
-                    const chatStore = useChatStore()
-                    if (chatStore.messages[data]) {
-                        delete chatStore[data]
-                    }
-                })
-
-                socket.value?.on('chat-message', (message) => {
-                    showNotify.success(`收到消息${message.content}`)
-                    const {addMessage} = useChatStore()
-                    addMessage(message)
-
-                })
-
             })
 
             socket.value.on('disconnect', (reason) => {
@@ -108,6 +91,92 @@ export const useSocketStore = defineStore('socket', () => {
             socket.value.on(CE.EVENTS_GET, (data) => {
                 localEventStore.customEvents = data
             })
+
+
+            // 聊天相关
+            socket.value?.on('client-list', (data) => {
+                const chatStore = useChatStore()
+                chatStore.clients = Object.values(data)
+            })
+            socket.value?.on('client-leave', (data) => {
+                const chatStore = useChatStore()
+                if (chatStore.messages[data]) {
+                    delete chatStore[data]
+                }
+            })
+
+            socket.value?.on('chat-message', (message) => {
+                showNotify.success(`收到消息${message.content || message.fileName}`)
+                const {addMessage} = useChatStore()
+                addMessage(message)
+            })
+
+
+            // socket文件上传
+            socket.value?.on(CE.FILE_PROGRESS, ({fileId, progress}) => {
+                const target = uploadFiles.value[fileId];
+                if (target) target.progress = progress;
+                if (parseInt(progress) === 100) emit(CE.FILE_END, {fileId});
+            });
+
+            socket.value?.on(CE.FILE_ACK, async ({fileId}) => {
+                const fileObj = uploadFiles.value[fileId];
+                if (!fileObj) return;
+                const {sendMessage, currentChat} = useChatStore()
+                sendMessage({
+                    fileId,
+                    fileName: fileObj.file.name,
+                    to: currentChat.id,
+                    sender: 'me',
+                    msgType:'file'
+                })
+
+                const CHUNK_SIZE = 1024 * 1024 * (navigator.connection?.downlink || 10); // 1MB 分片大小
+                const file = fileObj.file;
+
+                if (fileObj.offset === undefined) {
+                    fileObj.offset = 0;
+                    fileObj.chunkIndex = 0;
+                    fileObj.totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+                }
+                const reader = new FileReader();
+                const end = Math.min(fileObj.offset + CHUNK_SIZE, file.size);
+                reader.onload = (e) => {
+                    emit(CE.FILE_CHUNK, {
+                        fileId,
+                        chunk: e.target.result,
+                        chunkIndex: fileObj.chunkIndex,
+                        totalChunks: fileObj.totalChunks,
+                        fileName: file.name,
+                        fileType: file.type
+                    });
+                    fileObj.offset = end;
+                    fileObj.chunkIndex++;
+                    if (fileObj.chunkIndex < fileObj.totalChunks) {
+                        readAsArrayBuffer(fileObj.chunkIndex * CHUNK_SIZE);
+                    }
+                };
+
+                reader.onerror = (error) => {
+                    showToast.text(`文件[${fileId}]分片读取失败:`, error);
+                };
+
+                function readAsArrayBuffer(start) {
+                    const chunk = file.slice(start, start + CHUNK_SIZE);
+                    reader.readAsArrayBuffer(chunk);
+                }
+
+                readAsArrayBuffer(0)
+            });
+
+
+            // 传输完成
+            socket.value?.on(CE.FILE_COMPLETE, (fileId) => {
+                // const target = uploadFiles.value[fileId];
+                uploadFiles.value[fileId].file = null
+                showToast.text('上传完成')
+            });
+
 
             socket.value.on('reconnected', () => {
                 socket.value.disconnect()
@@ -164,6 +233,31 @@ export const useSocketStore = defineStore('socket', () => {
     }
 
 
+    // 文件上传
+    const handleUpload = (file, to) => {
+        if (overSize(file)) return;
+        console.log(file)
+        const fileData = {
+            id: generateUUID(),
+            name: file.name,
+            size: file.size,
+            file: file,
+            to,
+            progress: 0
+        };
+
+        uploadFiles.value[fileData.id] = fileData;
+        // 开始传输
+        emit(CE.FILE_START, {
+            fileId: fileData.id,
+            fileName: file.name,
+            fileSize: file.size,
+            to
+        });
+    }
+
+
+    // 处理自定义指令事件
     const eventHandler = useDebounceFn((item) => {
         if (item.events) {
             // socket事件
@@ -204,6 +298,8 @@ export const useSocketStore = defineStore('socket', () => {
         setToken,
         connect,
         disconnect,
+        uploadFiles,
+        handleUpload,
         on,
         off,
         emit,

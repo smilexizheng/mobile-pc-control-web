@@ -1,4 +1,5 @@
 import {useWindowSize} from "@vueuse/core";
+import {showNotify} from "@nutui/nutui";
 
 const setHeight = () => {
     const {width, height} = useWindowSize()
@@ -66,5 +67,19 @@ const parseJson = (str) => {
 
 }
 
+/**
+ * 是否已经超出文件限制
+ * @param file
+ * @returns {boolean}
+ */
+const overSize = (file) => {
+    const maxSize = 1024 * 1024 * 5000; // 300MB
+    const isOverSize = file.size >= maxSize;
+    if (isOverSize) {
+        showNotify.danger(file.name + '超过5GB!');
+    }
+    return isOverSize;
+};
 
-export {setHeight, posThreshold, generateUUID,parseJson}
+
+export {setHeight, posThreshold, generateUUID,parseJson,overSize}
