@@ -9,6 +9,7 @@ import {showNotify, showToast} from '@nutui/nutui'
 import {LocalEventStore} from "@/stores/localEventStore.js";
 import {useChatStore} from "@/stores/chatStore.js";
 import {generateUUID, overSize} from "@/utils/common.js";
+import Message from "@/components/Message/UseMessage.js";
 
 /**
  *  持续触发 任意socket某个事件
@@ -43,7 +44,7 @@ export const useSocketStore = defineStore('socket', () => {
     }, interval)
 
     function connect() {
-        if (!socket.value) {
+        if (!isConnected.value) {
             socket.value = io(import.meta.env.VITE_SOCKET_URL, {
                 autoConnect: true,
                 path: "/win-control.io",
@@ -176,7 +177,6 @@ export const useSocketStore = defineStore('socket', () => {
                 uploadFiles.value[fileId].file = null
                 showToast.text('上传完成')
             });
-
 
             socket.value.on('reconnected', () => {
                 socket.value.disconnect()

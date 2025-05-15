@@ -17,7 +17,7 @@ const selectClient = (client) => {
     <nut-cell
         size="large"
         v-if="client.id !== socketStore.socket?.id"
-        :title="(client.name || client.userAgent.device.model)+' '+client.clientIp"
+        :title="(client.name || client.userAgent.device.model || client.userAgent.os.name)+' '+client.clientIp"
         @click="selectClient(client)"
     >
 
