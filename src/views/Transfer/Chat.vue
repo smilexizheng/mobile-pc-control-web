@@ -1,3 +1,63 @@
+
+<script setup>
+import {ref, nextTick, onMounted, watch,} from 'vue'
+import { useChatStore } from '@/stores/chatStore'
+import {useSocketStore} from "@/stores/socket.js";
+import {Uploader} from "@nutui/icons-vue";
+import {useRouter} from "vue-router";
+const chatStore = useChatStore()
+const inputMessage = ref('')
+const messageList = ref(null)
+const socketStore = useSocketStore()
+const router = useRouter()
+
+onMounted(()=>{
+  if(!chatStore.currentChat){
+    router.back()
+  }
+  scrollToBottom()
+})
+
+const send = () => {
+  if (inputMessage.value.trim()) {
+    chatStore.sendMessage({content:inputMessage.value,msgType:'txt'})
+    socketStore.emit('chat-message',{to:chatStore.currentChat.id,content:inputMessage.value})
+    inputMessage.value = ''
+    scrollToBottom()
+  }
+}
+
+const scrollToBottom = () => {
+  nextTick(() => {
+    if (messageList.value) {
+      messageList.value.scrollTop = messageList.value.scrollHeight
+    }
+  })
+}
+
+watch(chatStore.messages, () => {
+  scrollToBottom()
+})
+
+
+const handleFileSelect = async (files) => {
+  if (files.length > 0) {
+    for (let i = 0; i < files.length; i++) {
+      socketStore.handleUpload(files[i],chatStore.currentChat.id);
+    }
+  }
+  return files;
+};
+
+const downloadFile = (data)=>{
+  const link = document.createElement('a')
+  link.href = `/downloadFile?fileId=${data.fileId}`
+  // link.target='_blank'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+}
+</script>
 <template>
   <div class="chat-window" v-if="chatStore.currentChat">
     <div class="message-list" ref="messageList">
@@ -49,61 +109,6 @@
   </div>
 </template>
 
-<script setup>
-import {ref, nextTick, onMounted,} from 'vue'
-import { useChatStore } from '@/stores/chatStore'
-import {useSocketStore} from "@/stores/socket.js";
-import {Uploader} from "@nutui/icons-vue";
-import {useRouter} from "vue-router";
-const chatStore = useChatStore()
-const inputMessage = ref('')
-const messageList = ref(null)
-const socketStore = useSocketStore()
-const router = useRouter()
-
-onMounted(()=>{
-  if(!chatStore.currentChat){
-    router.back()
-  }
-
-})
-
-const send = () => {
-  if (inputMessage.value.trim()) {
-    chatStore.sendMessage({content:inputMessage.value,msgType:'txt'})
-    socketStore.emit('chat-message',{to:chatStore.currentChat.id,content:inputMessage.value})
-    inputMessage.value = ''
-    scrollToBottom()
-  }
-}
-
-const scrollToBottom = () => {
-  nextTick(() => {
-    if (messageList.value) {
-      messageList.value.scrollTop = messageList.value.scrollHeight
-    }
-  })
-}
-
-
-const handleFileSelect = async (files) => {
-  if (files.length > 0) {
-    for (let i = 0; i < files.length; i++) {
-      socketStore.handleUpload(files[i],chatStore.currentChat.id);
-    }
-  }
-  return files;
-};
-
-const downloadFile = (data)=>{
-  const link = document.createElement('a')
-  link.href = `/downloadFile?fileId=${data.fileId}`
-  // link.target='_blank'
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-}
-</script>
 
 <style scoped>
 .chat-window {
