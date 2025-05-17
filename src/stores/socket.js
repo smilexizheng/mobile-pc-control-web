@@ -124,15 +124,18 @@ export const useSocketStore = defineStore('socket', () => {
                 const fileObj = uploadFiles.value[fileId];
                 if (!fileObj) return;
                 const {sendMessage, currentChat} = useChatStore()
-                sendMessage({
-                    fileId,
-                    fileName: fileObj.file.name,
-                    to: currentChat.id,
-                    sender: 'me',
-                    msgType:'file'
-                })
+                if(currentChat){
+                    sendMessage({
+                        fileId,
+                        fileName: fileObj.file.name,
+                        to: currentChat.id,
+                        sender: 'me',
+                        msgType:'file'
+                    })
+                }
 
-                const CHUNK_SIZE = 1024 * 1024 * (navigator.connection?.downlink || 10); // 1MB 分片大小
+
+                const CHUNK_SIZE = 1024 * 1024 * (navigator.connection?.downlink || 10); // 10MB 分片大小
                 const file = fileObj.file;
 
                 if (fileObj.offset === undefined) {
@@ -236,7 +239,6 @@ export const useSocketStore = defineStore('socket', () => {
     // 文件上传
     const handleUpload = (file, to) => {
         if (overSize(file)) return;
-        console.log(file)
         const fileData = {
             id: generateUUID(),
             name: file.name,
